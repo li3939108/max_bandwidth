@@ -2,7 +2,14 @@ import heap
 import graph
 import array
 
-def dkt_max_bandwidth(G, s_label, t_label):
+def dijkstra(G, s_label, t_label):
+	"""
+	Using Dijkstra's algorithm to find the MAX_BANDWIDTH from source to destination.
+	G is a graph represented by adjacency list, 
+	the labels for vertices in which must be consecutive positive integers.
+	s_label is the unique label for source vertex
+	t_label is the unique label for destination vertex
+	"""
 	h = heap.Heap(len(G.list), [])
 	parent = array.array('I', [0] * (h.max_size + 1))
 	i = 0
