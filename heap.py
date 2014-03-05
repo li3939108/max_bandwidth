@@ -18,7 +18,7 @@ class Heap:
 			self.size = self.max_size
 		else:
 			self.indices = array.array('I', [0] * (max_size + 1))
-			self.keys = array.array('I', [0] * (len(key_value_pairs) + 1))
+			self.keys = array.array('I', [0] * (max_size + 1))
 			self.size = len(key_value_pairs)
 			for i in range(0, len(key_value_pairs)):
 				self.keys[i + 1] = key_value_pairs[i][0]
@@ -62,7 +62,7 @@ class Heap:
 		self.indices[self.keys[index]] = index
 		self.indices[extracted] = 0
 		self.size = self.size - 1
-		self.keys = self.keys[0:len(self.keys) - 1]
+		#self.keys = self.keys[0:self.size - 1]
 		if(index <= parent(self.size)):
 			self.heapify(index)
 		return [extracted, self.values[extracted]]
@@ -76,7 +76,7 @@ class Heap:
 		else: 
 			self.size = self.size + 1
 		self.values[key] = value
-		self.keys.append(key)
+		self.keys[self.size] = key
 		self.indices[key] = self.size
 		self.update(key, value)
 	def max_update(self, key, value):
