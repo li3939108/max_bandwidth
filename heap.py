@@ -6,7 +6,11 @@ class Heap:
 		key_value_pairs = None, 
 		min_or_max = "max"):
 		"""
-		max_size is maximum heap size and the key should be a subset of integers from 1 to max_size
+		max_size is maximum heap size
+		This heap implementation will store the key and value in two arrays, 
+		and only the self.values[self.keys[index]] will give the value on index 
+		and the key should be a subset of integers from 1 to max_size
+		The default heap is max-heap, if you want a min-heap, simply make the third argument not "max"
 		"""
 		self.sorted = False
 		self.max_size = max_size
