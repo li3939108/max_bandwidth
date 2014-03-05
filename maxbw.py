@@ -20,7 +20,7 @@ def dijkstra(G, s_label, t_label):
 		index[v.label] = i
 		i = i + 1
 	h[s_label] = graph.MAX_BANDWIDTH 
-	while (h.indices[t_label] != 0  ):
+	while (h.has(t_label) ):
 		u_label_weight = h.pop()
 		if(h[u_label_weight[0]] == 0): break
 		u = G.list[index[u_label_weight[0]]]

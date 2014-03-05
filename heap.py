@@ -148,6 +148,8 @@ class Heap:
 	def build_heap(self):
 		for i in range(self.size / 2, 0, -1):
 			self.heapify(i)
+	def has(self, key):
+		return not not self.indices[key]
 	def p(self, index = 0):
 		if(index == 0):
 			for i in range(1, self.size + 1):
