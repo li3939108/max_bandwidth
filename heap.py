@@ -8,7 +8,7 @@ class Heap:
 		"""
 		max_size is maximum heap size and the key should be a subset of integers from 1 to max_size
 		"""
-		self.t = min_or_max
+		self.sorted = False
 		self.max_size = max_size
 		self.values = array.array('I', [0] * (max_size + 1))
 		if(key_value_pairs == None):
@@ -24,14 +24,17 @@ class Heap:
 				self.keys[i + 1] = key_value_pairs[i][0]
 				self.values[self.keys[i + 1]] = key_value_pairs[i][1]
 				self.indices[self.keys[i + 1]] = i + 1
-		if(self.t == "max"): 
+		self.set_type(min_or_max)
+		self.build_heap()
+	def set_type(self, min_or_max):
+		if(min_or_max == "max"): 
+			self.t = "max"
 			self.heapify = self.max_heapify
 			self.update = self.max_update
 		else:
 			self.t = "min"
 			self.heapify = self.min_heapify
 			self.update = self.min_update
-		self.build_heap()
 	def __getitem__(self, key):
 		return self.values[key]
 	def __setitem__(self, key, value):
@@ -50,6 +53,24 @@ class Heap:
 	def right(self, key):
 		index = self.indices[key]
 		return self.keys[right(index)]
+	def exchange(self, index1, index2):
+		temp = self.keys[index1]
+		self.keys[index1] = self.keys[index2]
+		self.keys[index2] = temp
+		self.indices[self.keys[index2]] = index2
+		self.indices[self.keys[index1]] = index1
+	def sort(self):
+		original_size = self.size
+		for i in range(original_size, 1, -1):
+			self.exchange(1, i)
+			self.size = self.size - 1
+			self.heapify(1)
+		self.sorted = True
+		if(self.t == "min"):
+			self.set_type("max")
+		else:
+			self.set_type("min")
+		self.size = original_size
 	def pop(self, key = None):
 		if(key == None): index = 1
 		else: index = self.indices[key]
@@ -90,11 +111,7 @@ class Heap:
 		else:
 			self.values[key] = value
 			while (index > 1 and self.values[self.keys[parent(index)]] < self.values[self.keys[index]]):
-				temp = self.keys[parent(index)]
-				self.keys[parent(index)] = self.keys[index]
-				self.keys[index] = temp
-				self.indices[self.keys[index]] = index
-				self.indices[self.keys[parent(index)]] = parent(index)
+				self.exchange(index, parent(index))
 				index = parent(index)
 	def max_heapify(self, i):
 		l = left(i)
@@ -106,11 +123,7 @@ class Heap:
 		if (r <= self.size and self.values[self.keys[r]] > self.values[self.keys[maximum]]):
 			maximum = r
 		if (maximum != i):
-			temp = self.keys[i]
-			self.keys[i] = self.keys[maximum]
-			self.keys[maximum] = temp
-			self.indices[self.keys[maximum]] = maximum
-			self.indices[self.keys[i]] = i
+			self.exchange(i, maximum)
 			self.max_heapify(maximum)
 	def min_update(self, key, value):
 		index = self.indices[key]
@@ -123,11 +136,7 @@ class Heap:
 		else:
 			self.values[key] = value
 			while (index > 1 and self.values[self.keys[parent(index)]] > self.values[self.keys[index]]):
-				temp = self.keys[parent(index)]
-				self.keys[parent(index)] = self.keys[index]
-				self.keys[index] = temp
-				self.indices[self.keys[index]] = index
-				self.indices[self.keys[parent(index)]] = parent(index)
+				self.exchange(parent(index), index)
 				index = parent(index)
 	def min_heapify(self, i):
 		l = left(i)
@@ -139,11 +148,7 @@ class Heap:
 		if (r <= self.size and self.values[self.keys[r]] < self.values[self.keys[minimum]]):
 			minimum = r
 		if (minimum != i):
-			temp = self.keys[i]
-			self.keys[i] = self.keys[minimum]
-			self.keys[minimum] = temp
-			self.indices[self.keys[minimum]] = minimum
-			self.indices[self.keys[i]] = i
+			self.exchange(i, minimum)
 			self.min_heapify(minimum)
 	def build_heap(self):
 		for i in range(self.size / 2, 0, -1):
