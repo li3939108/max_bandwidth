@@ -2,7 +2,7 @@ import heap
 import graph
 import array
 
-def dijkstra(G, s_label, t_label):
+def dkt(G, s_label, t_label):
 	"""
 	Using Dijkstra's algorithm to find the MAX_BANDWIDTH from source to destination.
 	G is a graph represented by adjacency list, 
@@ -26,3 +26,24 @@ def dijkstra(G, s_label, t_label):
 				h[v_label_weight[0]] = new_bandwidth
 				parent[v_label_weight[0]] = u_label_weight[0]
 	return [h[t_label], parent]
+
+def dkt_no_heap(G, s_label, t_label):
+	h = array.array('I', [0]* (G.V + 1))
+	s = array.array('c', [0]* (G.V + 1))
+	parent = array.array('I', [0] * (h.max_size + 1))
+	for v in G.adj_lists[1:]:
+		h[v.label] = 0
+		s[v.label] = 1
+		parent[v.label] = 0
+	h[s_label] = graph.MAX_BANDWIDTH
+	while (s[t_label] == 1):
+		u_label_weight = [h.index(max(h)), max(h)];
+		if(h[u_label_weight[0]] == 0): break
+		u = G[u_label_weight[0]]
+		for v_label_weight in u.list:
+			new_bandwidth = min(h[u_label_weight[0]], v_label_weight[1])
+			if(new_bandwidth > h[v_label_weight]):
+				h[v_label_weight[0]] = new_bandwidth
+				parent[v_label_weight[0]] = u_label_weight[0]
+	return [h[t_label], parent]
+ 	
