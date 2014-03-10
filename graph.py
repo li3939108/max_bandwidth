@@ -1,4 +1,6 @@
 import random
+import array
+
 MAX_BANDWIDTH = 5000
 
 class Vertex:
@@ -15,10 +17,18 @@ class Vertex:
 
 class Graph:
 	"""A Graph"""
+	def __getitem__(self, label):
+		return self.adj_lists[label]
+	def __setitem__(label, vertex):
+		self.adj_lists[label] = vertex
 	def __init__(self, vertex_list = []):
-		self.list = vertex_list
+		self.max_V = len(vertex_list)
+		self.V = len(vertex_list)
+		self.adj_lists = [0] * (len(vertex_list) + 1)
+		for v in vertex_list:
+			self.adj_lists[v.label] = v
 	def p(self):
-		for v in self.list:
+		for v in self.adj_lists[1:]:
 			v.p()
 def gen(D, V):
 	"""

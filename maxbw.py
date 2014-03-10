@@ -10,20 +10,16 @@ def dijkstra(G, s_label, t_label):
 	s_label is the unique label for source vertex
 	t_label is the unique label for destination vertex
 	"""
-	h = heap.Heap(len(G.list), [])
+	h = heap.Heap(G.V, [])
 	parent = array.array('I', [0] * (h.max_size + 1))
-	i = 0
-	index = array.array('I', [0] * (h.max_size + 1))
-	for v in G.list:
+	for v in G.adj_lists[1:]:
 		h[v.label] = 0
 		parent[v.label] = 0
-		index[v.label] = i
-		i = i + 1
 	h[s_label] = graph.MAX_BANDWIDTH 
 	while (h.has(t_label) ):
 		u_label_weight = h.pop()
 		if(h[u_label_weight[0]] == 0): break
-		u = G.list[index[u_label_weight[0]]]
+		u = G[u_label_weight[0]]
 		for v_label_weight in u.list:
 			new_bandwidth = min(h[u_label_weight[0]], v_label_weight[1])
 			if(new_bandwidth > h[v_label_weight[0]]):
