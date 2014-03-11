@@ -45,7 +45,7 @@ def dkt_no_heap(G, s_label, t_label):
 				max_w_i = i
 		u_label_weight = [max_w_i, max_w];
 		s[u_label_weight[0]] = '0'
-		if(h[u_label_weight[0]] == 0): break
+		if(h[u_label_weight[0]] == 0): return [0, parent]
 		u = G[u_label_weight[0]]
 		for v_label_weight in u.list:
 			new_bandwidth = min(h[u_label_weight[0]], v_label_weight[1])
@@ -53,4 +53,3 @@ def dkt_no_heap(G, s_label, t_label):
 				h[v_label_weight[0]] = new_bandwidth
 				parent[v_label_weight[0]] = u_label_weight[0]
 	return [h[t_label], parent]
- 	
