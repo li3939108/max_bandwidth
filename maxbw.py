@@ -2,7 +2,7 @@ import heap
 import graph
 import array
 
-def dkt(G, s_label, t_label):
+def dkt(G, s_label, t_label, heap=1):
 	"""
 	Using Dijkstra's algorithm to find the MAX_BANDWIDTH from source to destination.
 	G is a graph represented by adjacency list, 
@@ -10,9 +10,11 @@ def dkt(G, s_label, t_label):
 	s_label is the unique label for source vertex
 	t_label is the unique label for destination vertex
 	"""
+	if(heap != 1):
+		return dkt_no_heap(G, s_label, t_label)
 	h = heap.Heap(G.V, [])
 	parent = array.array('I', [0] * (h.max_size + 1))
-	for v in G.adj_lists[1:]:
+	for v in G.adj_list[1:]:
 		h[v.label] = 0
 		parent[v.label] = 0
 	h[s_label] = graph.MAX_BANDWIDTH 
@@ -31,7 +33,7 @@ def dkt_no_heap(G, s_label, t_label):
 	h = array.array('I', [0]* (G.V + 1))
 	s = array.array('c', ['0']* (G.V + 1))
 	parent = array.array('I', [0] * (G.V + 1))
-	for v in G.adj_lists[1:]:
+	for v in G.adj_list[1:]:
 		h[v.label] = 0
 		s[v.label] = '1'
 		parent[v.label] = 0
@@ -53,3 +55,5 @@ def dkt_no_heap(G, s_label, t_label):
 				h[v_label_weight[0]] = new_bandwidth
 				parent[v_label_weight[0]] = u_label_weight[0]
 	return [h[t_label], parent]
+
+def krsk(G, s_label, t_label):

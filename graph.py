@@ -18,17 +18,26 @@ class Vertex:
 class Graph:
 	"""A Graph"""
 	def __getitem__(self, label):
-		return self.adj_lists[label]
+		return self.adj_list[label]
 	def __setitem__(label, vertex):
-		self.adj_lists[label] = vertex
+		self.adj_list[label] = vertex
 	def __init__(self, vertex_list = []):
 		self.max_V = len(vertex_list)
 		self.V = len(vertex_list)
-		self.adj_lists = [0] * (len(vertex_list) + 1)
+		self.adj_list = [0] * (len(vertex_list) + 1)
 		for v in vertex_list:
-			self.adj_lists[v.label] = v
+			self.adj_list[v.label] = v
+	def edge_list(self):
+		edges = [[0,0]]
+		edge_weight = [-1]
+		for v in self.adj_list[1:]:
+			for u in v.list:
+				if(v.label < u[0]):
+					edges.append([v.label, u[0]])
+					edge_weight.append(u[1])
+		return [edges, edge_weight]
 	def p(self):
-		for v in self.adj_lists[1:]:
+		for v in self.adj_list[1:]:
 			v.p()
 def gen(D, V):
 	"""
