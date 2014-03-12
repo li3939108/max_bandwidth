@@ -14,6 +14,10 @@ class Vertex:
 		self.list = adjacency_list 
 	def p(self):
 		print self.label , " -> " , self.list
+	def make_set(self):
+		self.parent = self
+		self.rank   = 0
+
 
 class Graph:
 	"""A Graph"""
@@ -29,12 +33,12 @@ class Graph:
 			self.adj_list[v.label] = v
 	def edge_list(self):
 		edges = [[0,0]]
-		edge_weight = [-1]
+		edge_weight = [[0,-1]]
 		for v in self.adj_list[1:]:
 			for u in v.list:
 				if(v.label < u[0]):
-					edges.append([v.label, u[0]])
-					edge_weight.append(u[1])
+					edges.append([v, self[ u[0] ] ])
+					edge_weight.append([len(edge_weight) ,u[1]])
 		return [edges, edge_weight]
 	def p(self):
 		for v in self.adj_list[1:]:
