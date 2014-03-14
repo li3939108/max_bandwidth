@@ -11,6 +11,8 @@ def dkt(G, s_label, t_label, use_heap=1):
 	s_label is the unique label for source vertex
 	t_label is the unique label for destination vertex
 	"""
+	m_star = 0
+	n_star = 0
 	if(use_heap != 1):
 		return dkt_no_heap(G, s_label, t_label)
 	h = heap.Heap(G.V, [])
@@ -21,6 +23,7 @@ def dkt(G, s_label, t_label, use_heap=1):
 	h[s_label] = graph.MAX_BANDWIDTH 
 	while (h.has(t_label) ):
 		u_label_weight = h.pop()
+		n_star = n_star + 1
 		if(h[u_label_weight[0]] == 0): break
 		u = G[u_label_weight[0]]
 		for v_label_weight in u.list:
@@ -28,7 +31,8 @@ def dkt(G, s_label, t_label, use_heap=1):
 			if(new_bandwidth > h[v_label_weight[0]]):
 				h[v_label_weight[0]] = new_bandwidth
 				parent[v_label_weight[0]] = u_label_weight[0]
-	return [h[t_label], parent]
+				m_star = m_star + 1
+	return [h[t_label], parent, m_star, n_star]
 
 def dkt_no_heap(G, s_label, t_label):
 	h = array.array('I', [0]* (G.V + 1))
@@ -55,7 +59,7 @@ def dkt_no_heap(G, s_label, t_label):
 			if(new_bandwidth > h[v_label_weight[0]]):
 				h[v_label_weight[0]] = new_bandwidth
 				parent[v_label_weight[0]] = u_label_weight[0]
-	return [h[t_label], parent]
+	return [h[t_label], parent, 0, 0]
 
 def krsk(G, s_label, t_label):
 	"""
@@ -63,24 +67,26 @@ def krsk(G, s_label, t_label):
 	"""
 	parent = array.array('I', [0] * (G.V + 1))
 	mst = map(graph.Vertex, range(0, G.V + 1)) 
-	e = G.edge_list()
+	e = G.edges
 	h = heap.Heap(len(e[1]) - 1, e[1][1:], "min")
 	for v in G.adj_list[1:]:
 		v.make_set()
 	h.sort()
-	while(h.size >= 1 and uf.find(G[ s_label ]) != uf.find(G[ t_label ]) ):
-		key = h.pop()[0]
+	index = 1
+	while(index <= h.size and uf.find(G[ s_label ]) != uf.find(G[ t_label ]) ):
+		key = h.keys[index]
 		u = uf.find( e[0][key][0] )
 		v = uf.find( e[0][key][1] )
 		if(u != v):
 			mst[ e[0][key][0].label ].add_adjacency_vertex( e[0][key][1].label, h[key])
 			mst[ e[0][key][1].label ].add_adjacency_vertex( e[0][key][0].label, h[key])
 			uf.union(u, v)
+		index = index + 1
 	if(uf.find(G[ s_label ]) != uf.find(G[ t_label ]) ):
 		return [0, parent]
 	else:
 		max_bandwidth = dfs(graph.Graph(mst), s_label, t_label, graph.MAX_BANDWIDTH, parent)
-		return [max_bandwidth, parent]
+		return [max_bandwidth, parent, 0, 0]
 def dfs(G, s, t, bw, p):
 	for adj in G[s].list:
 		if(adj[0] == t):
