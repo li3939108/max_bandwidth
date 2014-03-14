@@ -2,16 +2,20 @@
 
 import graph, maxbw, random, time
 
-V = 5000
-D = 2
-graph.MAX_BANDWIDTH = D*V*10
+V = 500
+D = 200
+graph.MAX_BANDWIDTH = 100
 
 
 def runtime(method, G, s_label, t_label):
 	s = time.time()
 	ret = method(G, s_label, t_label)
 	e = time.time()
-	print method.__name__, 'result: ', ret[0], e - s , '    Only for Dijkstra    ',' updated edges: ', (ret[2] + 0.0) / (V * D / 2), ' visited vertices: ', (ret[3] + 0.0) / V
+	print	method.__name__, 'result: ',\
+			ret[0], e - s ,\
+			'    Only for Dijkstra    ',\
+			' updated edges: ',ret[2], '(',(ret[2] * 100.0) / (V * D / 2),'% )',\
+			 ' visited vertices: ',ret[3], '(', (ret[3] * 100.0) / V,'% )'
 
 
 G = graph.gen(D, V)
