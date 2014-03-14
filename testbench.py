@@ -12,11 +12,11 @@ def runtime(method, G, s_label, t_label):
 	ret = method(G, s_label, t_label)
 	e = time.time()
 	print\
-			method.__name__, 'result: ',\
-			ret[0], e - s ,\
-			'    Only for Dijkstra    ',\
-			' updated edges: ',ret[2], '(',(ret[2] * 100.0) / (V * D / 2),'% )',\
-			 ' visited vertices: ',ret[3], '(', (ret[3] * 100.0) / V,'% )'
+		method.__name__, 'result: ',\
+		ret[0], e - s ,\
+		'    Only for Dijkstra    ',\
+		' updated edges: ',ret[2], '(',(ret[2] * 100.0) / (V * D / 2),'% )',\
+		' visited vertices: ',ret[3], '(', (ret[3] * 100.0) / V,'% )'
 
 
 G = graph.gen(D, V)
