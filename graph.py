@@ -2,7 +2,6 @@ import random
 import array
 
 MAX_BANDWIDTH = 5000
-
 class Vertex:
 	"""A Graph Vertex"""
 	def __init__(self, label = 0, adjacency_list = []):
@@ -31,6 +30,7 @@ class Graph:
 		self.adj_list = [0] * (len(vertex_list) + 1)
 		for v in vertex_list:
 			self.adj_list[v.label] = v
+		self.edges = None
 	def edge_list(self):
 		edges = [[0,0]]
 		edge_weight = [[0,-1]]
