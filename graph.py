@@ -22,7 +22,7 @@ class Graph:
 	"""A Graph"""
 	def __getitem__(self, label):
 		return self.adj_list[label]
-	def __setitem__(label, vertex):
+	def __setitem__(self, label, vertex):
 		self.adj_list[label] = vertex
 	def __init__(self, vertex_list = []):
 		self.max_V = len(vertex_list)
