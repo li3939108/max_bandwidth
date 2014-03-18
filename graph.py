@@ -65,12 +65,7 @@ def gen(D, V):
 				min_d = min_d + 1
 		else:
 			v = v - len(sets[min_d])
-			for d in range(min_d + 1, D):
-				if(v / len(sets[d]) == 0):
-					v1 = sets[d].pop(v)
-					break
-				else:
-					v = v - len(sets[d])
+			v1 = sets[min_d + 1].pop(v)
 		l = D - len(v1.list)
 		d = min_d
 		pl = 0
