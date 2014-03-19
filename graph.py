@@ -67,29 +67,28 @@ def gen(D, V):
 			v = v - len(sets[min_d])
 			v1 = sets[min_d + 1].pop(v)
 		l = D - len(v1.list)
-		d = min_d
 		pl = 0
-		while(l > 0 and d < D):
-			untouched_len = len(sets[d]) - pl 
+		while(l > 0 and min_d < D):
+			untouched_len = len(sets[min_d]) - pl 
 			if(l < untouched_len):
 				for i in range(l):
-					v2 = sets[d].pop(random.randrange(len(sets[d]) - pl))
+					v2 = sets[min_d].pop(random.randrange(len(sets[min_d]) - pl))
 					weight = random.randint(1,MAX_BANDWIDTH)
 					v2.add_adjacency_vertex(v1.label, weight)
 					v1.add_adjacency_vertex(v2.label, weight)
-					sets[d + 1].append(v2)
+					sets[min_d + 1].append(v2)
 				l = 0
 			else:
 				for i in range(untouched_len):
-					v2 = sets[d].pop(random.randrange(len(sets[d]) - pl))
+					v2 = sets[min_d].pop(random.randrange(len(sets[min_d]) - pl))
 					weight = random.randint(1,MAX_BANDWIDTH)
 					v2.add_adjacency_vertex(v1.label, weight)
 					v1.add_adjacency_vertex(v2.label, weight)
-					sets[d + 1].append(v2)
+					sets[min_d + 1].append(v2)
 				l = l - untouched_len
 				pl = untouched_len
-				d = d + 1
-		if(len(sets[min_d]) == 0): min_d = min_d + 1
+				min_d = min_d + 1
+#		if(len(sets[min_d]) == 0): min_d = min_d + 1
 		sets[D].append(v1)
 	if(len(sets[D]) == V):
 		return Graph(sets[D])
