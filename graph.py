@@ -77,8 +77,7 @@ def gen(D, V):
 					weight = random.randint(1,MAX_BANDWIDTH)
 					v2.add_adjacency_vertex(v1.label, weight)
 					v1.add_adjacency_vertex(v2.label, weight)
-					if(len(v2.list) == d + 1): 
-						sets[d + 1].append(v2)
+					sets[d + 1].append(v2)
 				l = 0
 			else:
 				for i in range(untouched_len):
@@ -86,8 +85,7 @@ def gen(D, V):
 					weight = random.randint(1,MAX_BANDWIDTH)
 					v2.add_adjacency_vertex(v1.label, weight)
 					v1.add_adjacency_vertex(v2.label, weight)
-					if(len(v2.list) == d + 1): 
-						sets[d + 1].append(v2)
+					sets[d + 1].append(v2)
 				l = l - untouched_len
 				pl = untouched_len
 				d = d + 1
