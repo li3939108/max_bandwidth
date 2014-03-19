@@ -88,7 +88,6 @@ def gen(D, V):
 				l = l - untouched_len
 				pl = untouched_len
 				min_d = min_d + 1
-#		if(len(sets[min_d]) == 0): min_d = min_d + 1
 		sets[D].append(v1)
 	if(len(sets[D]) == V):
 		return Graph(sets[D])
