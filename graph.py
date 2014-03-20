@@ -1,7 +1,7 @@
 import random
 import array
 
-MAX_BANDWIDTH = 5000
+MAX_EDGE_WEIGHT = 5000
 class Vertex:
 	"""A Graph Vertex"""
 	def __init__(self, label = 0, adjacency_list = []):
@@ -73,7 +73,7 @@ def gen(D, V):
 			if(l < untouched_len):
 				for i in range(l):
 					v2 = sets[min_d].pop(random.randrange(len(sets[min_d]) - pl))
-					weight = random.randint(1,MAX_BANDWIDTH)
+					weight = random.randint(1,MAX_EDGE_WEIGHT)
 					v2.add_adjacency_vertex(v1.label, weight)
 					v1.add_adjacency_vertex(v2.label, weight)
 					sets[min_d + 1].append(v2)
@@ -81,7 +81,7 @@ def gen(D, V):
 			else:
 				for i in range(untouched_len):
 					v2 = sets[min_d].pop(random.randrange(len(sets[min_d]) - pl))
-					weight = random.randint(1,MAX_BANDWIDTH)
+					weight = random.randint(1,MAX_EDGE_WEIGHT)
 					v2.add_adjacency_vertex(v1.label, weight)
 					v1.add_adjacency_vertex(v2.label, weight)
 					sets[min_d + 1].append(v2)
