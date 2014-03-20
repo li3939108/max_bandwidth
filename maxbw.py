@@ -18,7 +18,7 @@ def dkt(G, s_label, t_label, use_heap=1):
 	for v in G.adj_list[1:]:
 		h[v.label] = 0
 		parent[v.label] = 0
-	h[s_label] = graph.MAX_BANDWIDTH 
+	h[s_label] = graph.MAX_EDGE_WEIGHT 
 	while (h.has(t_label) ):
 		u_label_weight = h.pop()
 		if(h[u_label_weight[0]] == 0): break
@@ -38,7 +38,7 @@ def dkt_no_heap(G, s_label, t_label):
 		h[v.label] = 0
 		s[v.label] = '1'
 		parent[v.label] = 0
-	h[s_label] = graph.MAX_BANDWIDTH
+	h[s_label] = graph.MAX_EDGE_WEIGHT
 	while (s[t_label] == '1'):
 		max_w = h[0]
 		max_w_i = 0 
@@ -79,7 +79,7 @@ def krsk(G, s_label, t_label):
 	if(uf.find(G[ s_label ]) != uf.find(G[ t_label ]) ):
 		return [0, parent]
 	else:
-		max_bandwidth = dfs(graph.Graph(mst), s_label, t_label, graph.MAX_BANDWIDTH, parent)
+		max_bandwidth = dfs(graph.Graph(mst), s_label, t_label, graph.MAX_EDGE_WEIGHT, parent)
 		return [max_bandwidth, parent]
 def dfs(G, s, t, bw, p):
 	for adj in G[s].list:
