@@ -1,5 +1,4 @@
 import random
-import array
 
 MAX_EDGE_WEIGHT = 5000
 class Vertex:
