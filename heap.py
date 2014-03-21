@@ -1,5 +1,8 @@
 import array
 import random
+
+
+VALUE_RANGE = 1000
 class Heap:
 	def __init__(self, 
 		max_size, 
@@ -18,7 +21,7 @@ class Heap:
 		if(key_value_pairs == None):
 			self.indices = array.array('I', range(0, max_size + 1))
 			self.keys = array.array('I', range(0, max_size + 1))
-			self.values = array.array('I', map(random.randrange, [1000] * (max_size + 1)))
+			self.values = array.array('I', map(random.randrange, [VALUE_RANGE] * (max_size + 1)))
 			self.size = self.max_size
 		else:
 			self.indices = array.array('I', [0] * (max_size + 1))
@@ -76,23 +79,32 @@ class Heap:
 			self.set_type("min")
 		self.size = original_size
 	def pop(self, key = None):
-		if(key == None): index = 1
-		else: index = self.indices[key]
-		if(index <= self.size and index != 0):
-			extracted = self.keys[index]
-		else:	
-			print "index out of range"
+		if(key == None): 
+			index = 1
+			key = self.keys[1] 
+		elif (key >= 1 and key <= self.max_size): 
+			index = self.indices[key]
+		else: 
+			print "No such key"
 			return
-		self.keys[index] = self.keys[self.size]
-		self.indices[self.keys[index]] = index
-		self.indices[extracted] = 0
-		self.size = self.size - 1
-		#self.keys = self.keys[0:self.size - 1]
-		if(index <= parent(self.size)):
-			self.heapify(index)
-		return [extracted, self.values[extracted]]
+		if(index <= self.size and index >= 1):
+			self.keys[index] = self.keys[self.size]
+			self.indices[self.keys[index]] = index
+			self.indices[ key ] = 0
+			self.size = self.size - 1
+			if(index <= parent(self.size)):
+				self.heapify(index)
+			return [ key , self.values[ key ]]
+		else:	
+			print "The key has been deleted or no such key"
+			return
 	def insert(self, key, value):
-		if(self.indices[key] != 0 ):
+		if (key >= 1 and key <= self.max_size): 
+			index = self.indices[key]
+		else: 
+			print "No such key"
+			return
+		if(index != 0 ):
 			print "key has been in heap, use update instead"
 			return
 		elif(self.size >= self.max_size):
@@ -105,9 +117,13 @@ class Heap:
 		self.indices[key] = self.size
 		self.update(key, value)
 	def max_update(self, key, value):
-		index = self.indices[key]
+		if(key >= 1 and key <= max_size):
+			index = self.indices[key]
+		else:
+			print "No such key"
+			return
 		if(index < 1 or index > self.size):
-			print "no such key in heap"
+			print "The key has been deleted or no such key"
 			return
 		if(value < self.values[key]):
 			self.values[key] = value
@@ -130,9 +146,13 @@ class Heap:
 			self.exchange(i, maximum)
 			self.max_heapify(maximum)
 	def min_update(self, key, value):
-		index = self.indices[key]
+		if(key >= 1 and key <= max_size):
+			index = self.indices[key]
+		else:
+			print "No such key"
+			return
 		if(index < 1 or index > self.size):
-			print "no such key in heap"
+			print "The key has been deleted or no such key"
 			return
 		if(value > self.values[self.keys[index]]):
 			self.values[key] = value
