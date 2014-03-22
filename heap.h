@@ -3,7 +3,7 @@
 #define VALUE_RANGE 1000 
 
 typedef enum _heap_type {
-	MAX_h = 1221, 
+	MAX_h = 0, 
 	MIN_h,
 	UNSET_h 
 } heap_t;

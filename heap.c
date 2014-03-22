@@ -216,6 +216,18 @@ Heap *new_heap(int max_size, int size, int (*key_value_pairs)[2], heap_t min_or_
 	build_heap(h) ;
 	return h ;
 }
+
+void sort(Heap *h){
+	int original_size = h->size, i ;
+	for (i = original_size; i > 1; i--){
+		exchange(h, 1, i) ;
+		h->size -= 1;
+		h->heapify(h, 1) ;
+	}
+	h->sorted = true ;
+	h->t = !h->t ;
+	h->size = original_size ;
+}
 void free_heap(Heap *h){
 	free(h->indices) ;
 	free(h->keys) ;
@@ -246,6 +258,8 @@ void p(Heap *h, int index){
 int main(){
 	Heap *h = new_heap(10, 10, NULL, MAX_h) ;
 	p(h, 0);
+	sort(h) ;
+	p(h, 0) ;
 	free_heap(h);
 	return 0;
 }
