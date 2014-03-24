@@ -68,20 +68,20 @@ def krsk(G, s_label, t_label):
 	parent = array.array('I', [0] * (G.V + 1))
 	mst = map(graph.Vertex, range(0, G.V + 1)) 
 	e = G.edges
-	h = heap.Heap(len(e[1]) - 1, e[1][1:], "min")
+	h = heap.Heap(len(e[1]) - 1, e[1][1:], "max")
 	for v in G.adj_list[1:]:
 		v.make_set()
-	h.sort()
-	index = 1
-	while(index <= h.size and uf.find(G[ s_label ]) != uf.find(G[ t_label ]) ):
-		key = h.keys[index]
+#	h.sort()
+#	index = 1
+	while( h.size > 1 and uf.find(G[ s_label ]) != uf.find(G[ t_label ]) ):
+		[key, value] = h.pop()
 		u = uf.find( e[0][key][0] )
 		v = uf.find( e[0][key][1] )
 		if(u != v):
 			mst[ e[0][key][0].label ].add_adjacency_vertex( e[0][key][1].label, h[key])
 			mst[ e[0][key][1].label ].add_adjacency_vertex( e[0][key][0].label, h[key])
 			uf.union(u, v)
-		index = index + 1
+#		index = index + 1
 	if(uf.find(G[ s_label ]) != uf.find(G[ t_label ]) ):
 		return [0, parent]
 	else:
