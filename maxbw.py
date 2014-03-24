@@ -71,8 +71,6 @@ def krsk(G, s_label, t_label):
 	h = heap.Heap(len(e[1]) - 1, e[1][1:], "max")
 	for v in G.adj_list[1:]:
 		v.make_set()
-#	h.sort()
-#	index = 1
 	while( h.size > 1 and uf.find(G[ s_label ]) != uf.find(G[ t_label ]) ):
 		[key, value] = h.pop()
 		u = uf.find( e[0][key][0] )
@@ -81,12 +79,11 @@ def krsk(G, s_label, t_label):
 			mst[ e[0][key][0].label ].add_adjacency_vertex( e[0][key][1].label, h[key])
 			mst[ e[0][key][1].label ].add_adjacency_vertex( e[0][key][0].label, h[key])
 			uf.union(u, v)
-#		index = index + 1
 	if(uf.find(G[ s_label ]) != uf.find(G[ t_label ]) ):
 		return [0, parent]
 	else:
 		max_bandwidth = dfs(graph.Graph(mst), s_label, t_label, graph.MAX_EDGE_WEIGHT, parent)
-		return [max_bandwidth, parent, 0, 0]
+		return [max_bandwidth, parent, h.size  , 0]
 def dfs(G, s, t, bw, p):
 	for adj in G[s].list:
 		if(adj[0] == t):
