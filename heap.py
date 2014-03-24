@@ -146,7 +146,7 @@ class Heap:
 			self.exchange(i, maximum)
 			self.max_heapify(maximum)
 	def min_update(self, key, value):
-		if(key >= 1 and key <= max_size):
+		if(key >= 1 and key <= self.max_size):
 			index = self.indices[key]
 		else:
 			print "No such key"
