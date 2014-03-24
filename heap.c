@@ -3,13 +3,13 @@
 #include <time.h>
 #include "heap.h"
 
- int left(int index){
+inline int left(int index){
 	return index * 2 ;
 }
- int right(int index){
+inline int right(int index){
 	return 1 + index * 2 ;
 }
- int parent(int index){
+inline int parent(int index){
 	return index / 2 ;
 }
 void exchange(Heap *h, int index1, int index2){
@@ -255,6 +255,8 @@ void p(Heap *h, int index){
 	}
 
 }
+/*
+ * uncomment this to test
 int main(){
 	Heap *h = new_heap(10, 10, NULL, MAX_h) ;
 	p(h, 0);
@@ -263,3 +265,4 @@ int main(){
 	free_heap(h);
 	return 0;
 }
+*/
