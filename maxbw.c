@@ -1,6 +1,9 @@
 #include "heap.h"
 #include "graph.h"
+#include "uf.h"
 #include <stdlib.h>
+#include <time.h>
+#include <stdio.h>
 
 int *maxbw_dkt(Graph *G, int s_label, int t_label, bool use_heap) {
 	Heap *h ;
@@ -42,13 +45,16 @@ int *maxbw_dkt(Graph *G, int s_label, int t_label, bool use_heap) {
  */
  int dfs(Graph *G, int s_label, int t_label, int bw, int *p){
  	int i, j;
+	if( t_label == s_label ){
+		return bw ;
+	}
  	for(i = 0; i < G->adj_list[ s_label ]->degree; i++){
- 		int *adj = G->adj_list[ s_label ]->list[ i ] ;
+ 		int *adj = (int *)G->adj_list[ s_label ]->list[ i ] ;
  		if( adj[0] == t_label){
  			return bw > adj[1] ? adj[1] : bw ;
  		}
- 		if(p[adj[0] ] == 0){
-
+ 		if(p[ adj[0] ] == 0){
+			int ret ;
  			p[adj[0] ] = s_label ;
  			ret = dfs(G, adj[0], t_label, bw > adj[1] ? adj[1] : bw, p ) ;
  			if(ret != -1){
@@ -60,14 +66,15 @@ int *maxbw_dkt(Graph *G, int s_label, int t_label, bool use_heap) {
  }
 int *maxbw_krsk(Graph *G, int s_label, int t_label){
 	Heap *h ;
-	Vertex *mst[G->V + 1] ;
+	Vertex **mst = (Vertex **)malloc( (G->V + 1) * sizeof *mst) ;
 	int *parent = (int *)malloc( ( G->V + 1 ) * sizeof *parent), i, j,(*e)[2], (*ep)[2] ;
 	edges(G, NULL) ;
 	e = G->edge_list ;
 	ep = G->edge_pair ;
-	h = new_heap(G->E, e + 1, MAX_h) ;
+	h = new_heap(G->E, G->E, e + 1, MAX_h) ;
 	for(i = 0; i <= G->V; i++){
 		mst[i] = new_vertex(i) ;
+		parent[i] = 0 ;
 	}
 	/*
 	*/
@@ -79,30 +86,55 @@ int *maxbw_krsk(Graph *G, int s_label, int t_label){
 		if( u != v){
 			add_adjacency_vertex(mst[ ep[key][0] ], ep[key][1], e[key][1] );
 			add_adjacency_vertex(mst[ ep[key][1] ], ep[key][0], e[key][1] );
-			union(u, v) ;
+			merge(u, v) ;
 		}
 	}
 	if(find(G->adj_list[ s_label ]) != find( G->adj_list[ t_label ]) ){
 		parent [0] = 0 ;
 		return parent ;
 	}else{
-		Graph *G_mst = new_graph(G->V, mst) ;
+		Graph *G_mst = new_graph(G->V, mst + 1) ;
+	//	pg(G_mst) ;
 		parent[ 0 ] = dfs(G_mst, s_label, t_label, MAX_EDGE_WEIGHT, parent) ;
 		free(G_mst) ;
+		free(mst) ;
 		return parent ;
 	}
 }
 
 int main(){
-	Graph *G = gen(1000, 5000) ;
-	int i, *result ;
-	pg(G) ;
-	result = maxbw_dkt(G, 2, 8, true) ;
+	int i, *result, D = 1000, V = 5000, s_label, t_label ;
+	Graph *G = gen(D, V) ;
+	struct timeval tv ;
+	double st, et ;
+	//pg(G) ;
+	s_label = 1 + rand() % V ;
+	t_label = 1 + rand() % V ;
+	printf("dkt:\n" );
+	gettimeofday(&tv, NULL);
+	st =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
+	result = maxbw_dkt(G, s_label, t_label, true) ;
+	gettimeofday(&tv, NULL);
+	et =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
 	printf("\n[");
-	for(i = 0; i <= G->V; i++){
-		printf("%d:%d ",i , result[i]) ;
+	for(i = 0; i <= 0; i++){
+		printf("%d:%d ",i, result[i] ) ;
 	}
-	printf("]\n");
+	printf(", %fs]\n", et - st);
+	free(result) ;
+
+	printf("krsk:\n" );
+
+	gettimeofday(&tv, NULL);
+	st =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
+	result = maxbw_krsk(G, s_label, t_label) ;
+	gettimeofday(&tv, NULL);
+	et =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
+	printf("\n[");
+	for(i = 0; i <= 0; i++){
+		printf("%d:%d ",i,  result[i] ) ;
+	}
+	printf(", %fs]\n", et - st);
 	free_graph(G) ;
 	free(result) ;
 	return 0 ;
