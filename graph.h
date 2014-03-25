@@ -1,7 +1,7 @@
 #ifndef __GRAPH_H__
 #define __GRAPH_H__
 
-#define MAX_EDGE_WEIGHT 5000
+#define MAX_EDGE_WEIGHT 5000000
 #include <stdio.h>
 
 
@@ -16,7 +16,8 @@ typedef struct _Vertex{
 typedef struct _Graph{
 	int V ;
 	int E ;
-	int (*edge_list)[4] ; //[label, v1, v2, weight] 
+	int (*edge_list)[2] ; // [label,weight]
+	int (*edge_pair)[2] ; //[v1, v2]
 	Vertex **adj_list ;
 } Graph;
 

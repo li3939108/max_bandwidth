@@ -6,18 +6,20 @@
 #include <stdio.h>
 #include "graph.h"
 
-Graph *new_graph(int V, Vertex *vertex_list[]){
+Graph *new_graph(int V, Vertex *vertex_list[V]){
 	int i = 0;
 	Graph * G = (Graph *)malloc( sizeof (Graph) ) ;
 	G->V = V ;
 	G->E = 0 ;
 	G->adj_list = (Vertex **)calloc( V + 1, sizeof (Vertex *)) ;
-	G->edge_list = (int (*)[4])calloc(1, sizeof *(G->edge_list)) ;
+	G->edge_list = (int (*)[2])calloc(1, sizeof *(G->edge_list)) ;
+	G->edge_pair =  (int (*)[2])calloc(1, sizeof *(G->edge_pair)) ;
 	for( i = 0; i < G->V ; i++){//Make the adjacency list sorted by the label
 		G->adj_list[ vertex_list[i]->label ] = vertex_list[ i  ] ;
 	}
 	G->adj_list[0] = NULL ;
 	memset(G->edge_list, 0, sizeof *(G->edge_list)) ;
+	memset(G->edge_pair, 0, sizeof *(G->edge_pair)) ;
 	return G ;
 }
 Vertex *new_vertex(int label){
@@ -48,6 +50,9 @@ void free_graph(Graph *G){
 	}
 	if(G->edge_list != NULL){
 		free(G->edge_list) ;
+	}
+	if(G->edge_pair != NULL){
+		free(G->edge_pair) ;
 	}
 	free(G);
 }
@@ -179,7 +184,7 @@ void edges(Graph * G, FILE *output){
 		}else{
 			fprintf (output, "%d  %d\n", G->V, G->E) ;		
 			for(i = 1; i <= G->E; i++){
-				fprintf(output, "%d %d\n", G->edge_list[i][1], G->edge_list[i][2]) ;
+				fprintf(output, "%d %d\n", G->edge_pair[i][1], G->edge_pair[i][2]) ;
 			}
 		}
 	}else{
@@ -188,11 +193,12 @@ void edges(Graph * G, FILE *output){
 			for( j = 0; j < v->degree; j++){
 				if(v->label < v->list[j][0]){
 					G->E += 1 ;
-					G->edge_list = (int (*)[4])realloc(G->edge_list, (G->E + 1)* sizeof *(G->edge_list)); 		
+					G->edge_list = (int (*)[2])realloc(G->edge_list, (G->E + 1)* sizeof *(G->edge_list)); 		
 					G->edge_list[ G->E ][0] = G->E ;	
-					G->edge_list[ G->E ][1] = v->label ;	
-					G->edge_list[ G->E ][2] = v->list[j][0] ;	
-					G->edge_list[ G->E ][3] = v->list[j][1] ;	
+					G->edge_list[ G->E ][1] = v->list[j][1] ;	
+					G->edge_pair = (int (*)[2])realloc(G->edge_pair, (G->E + 1)* sizeof *(G->edge_pair)); 		
+					G->edge_pair[ G->E ][0] = v->label ;	
+					G->edge_pair[ G->E ][1] = v->list[j][0] ;	
 				}
 			}
 		}
