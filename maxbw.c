@@ -19,10 +19,9 @@ int *maxbw_dkt_no_heap(Graph *G, int s_label, int t_label){
 	 */
 	int *parent = (int *)calloc((G->V + 1) , sizeof *parent), i, j ;
 	Vertex *s = G->adj_list[s_label] ;
-	node *head = (node *)calloc(1, sizeof *head),/* *last = NULL,*/ *new_node = NULL, *iter,
+	node *head = (node *)calloc(1, sizeof *head), *new_node = NULL, *iter,
 	**hash = (node **)calloc(G->V + 1, sizeof *hash);
 
-	//last = head ;
 	head->key = s_label;
 	head->value = MAX_EDGE_WEIGHT ;
 	head->in_tree = true ;
@@ -53,11 +52,6 @@ int *maxbw_dkt_no_heap(Graph *G, int s_label, int t_label){
 		max_node->next->in_tree = true ;		
 		//remove the max node 
 		max_node->next = max_node->next->next ;
-		/*
-		if(max_node->next == NULL){
-			last = max_node ;
-		}//update last 
-		*/
 		parent_bandwidth = hash[label]->value ;
 		if(parent_bandwidth == 0){
 			break ;
@@ -77,14 +71,6 @@ int *maxbw_dkt_no_heap(Graph *G, int s_label, int t_label){
 				new_node->value = new_bandwidth ;
 				parent[ v_label_weight[0] ] = label ;
 				hash[ v_label_weight[0] ] = new_node ;
-/*
-				last->next = calloc(1, sizeof *last) ;
-				last->next->key = v_label_weight[0] ;
-				last->next->value = new_bandwidth ;
-				last = last->next ;
-				parent[ v_label_weight[ 0 ] ] = label ;
-				hash[ v_label_weight[0] ] = last ;
-				*/
 			}
 		}
 	}
