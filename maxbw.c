@@ -75,19 +75,26 @@ int *maxbw_dkt_no_heap(Graph *G, int s_label, int t_label){
 	}else{
 		parent[0] = 0 ;
 	}
+	for(i = 0; i <= G->V; i++ ){
+		free(hash[i]) ;
+	}
+	/*
 	for(iter = head; iter != NULL; ){
 		node *temp = iter->next ;
 		free(iter) ;
 		iter = temp ;
 	}
+	*/
 	free(hash) ;
 	return parent ;
 }
 int *maxbw_dkt(Graph *G, int s_label, int t_label, bool use_heap) {
 	Heap *h ;
-	int *parent = (int *)malloc( ( G->V + 1 ) * sizeof *parent), i, j ;
+	int *parent, i, j ;
 	if(use_heap == false){
 		return maxbw_dkt_no_heap(G, s_label, t_label) ;
+	}else{
+		parent =  (int *)malloc( ( G->V + 1 ) * sizeof *parent) ;
 	}
 	h = new_heap(G->V, 0, NULL, MAX_h) ;
 	for(i = 1; i <= G->V; i++){
@@ -175,8 +182,10 @@ int *maxbw_krsk(Graph *G, int s_label, int t_label){
 		Graph *G_mst = new_graph(G->V, mst + 1) ;
 	//	pg(G_mst) ;
 		parent[ 0 ] = dfs(G_mst, s_label, t_label, MAX_EDGE_WEIGHT, parent) ;
-		free(G_mst) ;
+		free_graph(G_mst) ;
+		free_vertex(mst[0]) ;
 		free(mst) ;
+		free_heap(h) ;
 		return parent ;
 	}
 }
@@ -216,7 +225,7 @@ int main(){
 	}
 	printf(", %fs]\n", et - st);
 	free(result) ;
-	
+
 	printf("krsk:\n" );
 	gettimeofday(&tv, NULL);
 	st =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
