@@ -5,11 +5,89 @@
 #include <time.h>
 #include <stdio.h>
 
+typedef struct _node{
+	int key ;
+	int value ;
+	struct _node *next ;
+	bool in_tree ;
+} node ;
+int *maxbw_dkt_no_heap(Graph *G, int s_label, int t_label){
+	/*
+	 * Use Dijkstra's algorithm to find maximal bandwidth
+	 * doesn't use the heap data structrue
+	 * simple use a linked list as a set 
+	 */
+	int *parent = (int *)calloc((G->V + 1) , sizeof *parent), i, j ;
+	Vertex *s = G->adj_list[s_label] ;
+	node *head = (node *)calloc(1, sizeof *head), *new_node = NULL, *iter,
+	**hash = (node **)calloc(G->V + 1, sizeof *hash);
+
+	head->key = s_label;
+	head->value = MAX_EDGE_WEIGHT ;
+	head->in_tree = true ;
+	hash[s_label] = head ;
+	parent[s_label ] = s_label ;
+	for(i = 0; i < s->degree; i++){
+		new_node = calloc(1, sizeof *new_node) ;
+		new_node->next = head->next ;
+		head->next = new_node ;
+		new_node->key = s->list[i][0] ;
+		new_node->value = s->list[i][1] ;
+		parent[ s->list[i][0] ] = s_label ;
+		hash[ s->list[i][0] ] = new_node ;
+	}
+	while( ! (hash[ t_label ] && hash[t_label]->in_tree)){
+		node *temp = head, *max_node=head  ;
+		int max = 0, label, parent_bandwidth ;
+		Vertex *u ;
+		while(temp->next != NULL){
+			if(temp->next->value > max){
+				max = temp->next->value ;
+				max_node = temp ;
+			}
+			temp = temp->next ;
+		}//find the max
+
+		label = max_node->next->key ;
+		max_node->next->in_tree = true ;		
+		//remove the max node 
+		max_node->next = max_node->next->next ;
+		parent_bandwidth = hash[label]->value ;
+		if(parent_bandwidth == 0){
+			break ;
+		}
+		u = G->adj_list[ label ] ;
+		for( i = 0; i < u->degree; i++){
+			int v_label_weight[2] = {u->list[ i ][ 0 ], u->list[ i ][ 1 ] };
+			int new_bandwidth = parent_bandwidth > v_label_weight[ 1 ] ? v_label_weight[ 1 ] : parent_bandwidth ;
+			if( hash[v_label_weight[0] ] && new_bandwidth > hash[ v_label_weight[ 0 ] ]->value  ){
+				hash[v_label_weight[0] ]->value = new_bandwidth ;
+				parent[ v_label_weight[ 0 ] ] = label ;
+			}else if( hash[ v_label_weight[0] ] == NULL){
+				new_node = calloc(1, sizeof *new_node) ;
+				new_node->next = head->next ;
+				head->next = new_node ;
+				new_node->key = v_label_weight[0] ;
+				new_node->value = new_bandwidth ;
+				parent[ v_label_weight[0] ] = label ;
+				hash[ v_label_weight[0] ] = new_node ;
+			}
+		}
+	}
+	parent[0] = hash[ t_label ]->value ;
+	for(i = 0; i <= G->V; i++ ){
+		free(hash[i]) ;
+	}
+	free(hash) ;
+	return parent ;
+}
 int *maxbw_dkt(Graph *G, int s_label, int t_label, bool use_heap) {
 	Heap *h ;
-	int *parent = (int *)malloc( ( G->V + 1 ) * sizeof *parent), i, j ;
+	int *parent, i, j ;
 	if(use_heap == false){
-		//return maxbw_dkt_no_heap(G, s_label, t_label) ;
+		return maxbw_dkt_no_heap(G, s_label, t_label) ;
+	}else{
+		parent =  (int *)malloc( ( G->V + 1 ) * sizeof *parent) ;
 	}
 	h = new_heap(G->V, 0, NULL, MAX_h) ;
 	for(i = 1; i <= G->V; i++){
@@ -40,10 +118,8 @@ int *maxbw_dkt(Graph *G, int s_label, int t_label, bool use_heap) {
 	free_heap(h) ;
 	return parent ;
 }
-/*
- *	Using Kruskal's algorithm to find the maximal bandwidth problem
- */
- int dfs(Graph *G, int s_label, int t_label, int bw, int *p){
+
+int dfs(Graph *G, int s_label, int t_label, int bw, int *p){
  	int i, j;
 	if( t_label == s_label ){
 		return bw ;
@@ -65,6 +141,9 @@ int *maxbw_dkt(Graph *G, int s_label, int t_label, bool use_heap) {
  	return -1 ;
  }
 int *maxbw_krsk(Graph *G, int s_label, int t_label){
+/*
+ *	Using Kruskal's algorithm to find the maximal bandwidth problem
+ */
 	Heap *h ;
 	Vertex **mst = (Vertex **)malloc( (G->V + 1) * sizeof *mst) ;
 	int *parent = (int *)malloc( ( G->V + 1 ) * sizeof *parent), i, j,(*e)[2], (*ep)[2] ;
@@ -76,8 +155,6 @@ int *maxbw_krsk(Graph *G, int s_label, int t_label){
 		mst[i] = new_vertex(i) ;
 		parent[i] = 0 ;
 	}
-	/*
-	*/
 	while(h->size > 1 && find(G->adj_list[ s_label ]) != find( G->adj_list[ t_label ])){
 		int key = h->keys[1] ;
 		int value = pop(h, 0) ;
@@ -94,22 +171,24 @@ int *maxbw_krsk(Graph *G, int s_label, int t_label){
 		return parent ;
 	}else{
 		Graph *G_mst = new_graph(G->V, mst + 1) ;
-	//	pg(G_mst) ;
 		parent[ 0 ] = dfs(G_mst, s_label, t_label, MAX_EDGE_WEIGHT, parent) ;
-		free(G_mst) ;
+		free_graph(G_mst) ;
+		free_vertex(mst[0]) ;
 		free(mst) ;
+		free_heap(h) ;
 		return parent ;
 	}
 }
 
 int main(){
-	int i, *result, D = 1000, V = 5000, s_label, t_label ;
+	int i, *result, D = 6, V = 5000, s_label, t_label ;
 	Graph *G = gen(D, V) ;
 	struct timeval tv ;
 	double st, et ;
-	//pg(G) ;
 	s_label = 1 + rand() % V ;
 	t_label = 1 + rand() % V ;
+
+
 	printf("dkt:\n" );
 	gettimeofday(&tv, NULL);
 	st =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
@@ -123,8 +202,20 @@ int main(){
 	printf(", %fs]\n", et - st);
 	free(result) ;
 
-	printf("krsk:\n" );
+	printf("dkt_no_heap:\n" );
+	gettimeofday(&tv, NULL);
+	st =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
+	result = maxbw_dkt(G, s_label, t_label, false) ;
+	gettimeofday(&tv, NULL);
+	et =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
+	printf("\n[");
+	for(i = 0; i <= 0; i++){
+		printf("%d:%d ",i, result[i] ) ;
+	}
+	printf(", %fs]\n", et - st);
+	free(result) ;
 
+	printf("krsk:\n" );
 	gettimeofday(&tv, NULL);
 	st =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
 	result = maxbw_krsk(G, s_label, t_label) ;
@@ -137,5 +228,6 @@ int main(){
 	printf(", %fs]\n", et - st);
 	free_graph(G) ;
 	free(result) ;
+
 	return 0 ;
 }
