@@ -154,6 +154,7 @@ int *maxbw_krsk(Graph *G, int s_label, int t_label){
 	for(i = 0; i <= G->V; i++){
 		mst[i] = new_vertex(i) ;
 		parent[i] = 0 ;
+		make_set(G->adj_list[i]) ;
 	}
 	while(h->size > 1 && find(G->adj_list[ s_label ]) != find( G->adj_list[ t_label ])){
 		int key = h->keys[1] ;
@@ -181,14 +182,15 @@ int *maxbw_krsk(Graph *G, int s_label, int t_label){
 }
 
 int main(){
-	int i, *result, D = 6, V = 5000, s_label, t_label ;
+	int i,j, *result, D = 6, V = 5000, s_label, t_label ;
 	Graph *G = gen(D, V) ;
 	struct timeval tv ;
 	double st, et ;
+
+for(j = 0; j < 5; j++){
 	s_label = 1 + rand() % V ;
 	t_label = 1 + rand() % V ;
-
-
+	//pg(G);
 	printf("dkt:\n" );
 	gettimeofday(&tv, NULL);
 	st =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
@@ -218,7 +220,7 @@ int main(){
 	printf("krsk:\n" );
 	gettimeofday(&tv, NULL);
 	st =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
-	result = maxbw_krsk(G, s_label, t_label) ;
+	result = maxbw_krsk(G, t_label, s_label) ;
 	gettimeofday(&tv, NULL);
 	et =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
 	printf("\n[");
@@ -226,8 +228,10 @@ int main(){
 		printf("%d:%d ",i,  result[i] ) ;
 	}
 	printf(", %fs]\n", et - st);
-	free_graph(G) ;
 	free(result) ;
 
+	printf("-------------------------\n");
+}
+	free_graph(G) ;
 	return 0 ;
 }

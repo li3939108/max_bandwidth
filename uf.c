@@ -1,6 +1,10 @@
 #define __UF_FUN__
 #include "uf.h"
 
+void make_set(Vertex *v){
+	v->parent = v ;
+	v->rank = 0;
+}
 Vertex *find(Vertex *v){
 	if(v->parent == v){
 		return v;

@@ -42,12 +42,15 @@ class Graph:
 	def p(self):
 		for v in self.adj_list[1:]:
 			v.p()
+	
 def gen(D, V):
 	"""
 	D is the degree for every vertex
 	V is the total number of vertices
 	generate a random graph with V vertices, and every vertex has exact degree of D
 	"""
+	if(type(D) is list):
+		return gen_sequence(D, V) 
 	if(D * V > V * (V - 1)):
 		print "No such graph: total degree should be less than of equal to 2 x maximal number of edge"
 		return Graph([])
