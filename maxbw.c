@@ -181,11 +181,24 @@ int *maxbw_krsk(Graph *G, int s_label, int t_label){
 	}
 }
 
-int main(){
-	int i,j, *result, D = 6, V = 5000, s_label, t_label ;
-	Graph *G = gen(D, V) ;
+int main(int argc, char ** argv){
+	int i,j, *result, D = 1000, V = 5000, s_label, t_label ;
+
+
+	Graph *G  ;
 	struct timeval tv ;
 	double st, et ;
+	D = atoi(argv[2]) ;
+	V = atoi(argv[1]) ;
+
+	gettimeofday(&tv, NULL);
+	st =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
+	G = gen(D, V);
+	gettimeofday(&tv, NULL);
+	et =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
+
+	printf("\n%d-regular graph with %d vertices generated in %fs\n------------------------------------------\n", D, V, et - st);
+
 
 for(j = 0; j < 5; j++){
 	s_label = 1 + rand() % V ;
@@ -195,19 +208,6 @@ for(j = 0; j < 5; j++){
 	gettimeofday(&tv, NULL);
 	st =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
 	result = maxbw_dkt(G, s_label, t_label, true) ;
-	gettimeofday(&tv, NULL);
-	et =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
-	printf("\n[");
-	for(i = 0; i <= 0; i++){
-		printf("%d:%d ",i, result[i] ) ;
-	}
-	printf(", %fs]\n", et - st);
-	free(result) ;
-
-	printf("dkt_no_heap:\n" );
-	gettimeofday(&tv, NULL);
-	st =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
-	result = maxbw_dkt(G, s_label, t_label, false) ;
 	gettimeofday(&tv, NULL);
 	et =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
 	printf("\n[");
@@ -229,6 +229,20 @@ for(j = 0; j < 5; j++){
 	}
 	printf(", %fs]\n", et - st);
 	free(result) ;
+
+	printf("dkt_no_heap:\n" );
+	gettimeofday(&tv, NULL);
+	st =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
+	result = maxbw_dkt(G, s_label, t_label, false) ;
+	gettimeofday(&tv, NULL);
+	et =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
+	printf("\n[");
+	for(i = 0; i <= 0; i++){
+		printf("%d:%d ",i, result[i] ) ;
+	}
+	printf(", %fs]\n", et - st);
+	free(result) ;
+
 
 	printf("-------------------------\n");
 }
