@@ -191,7 +191,6 @@ Heap *new_heap(int max_size, int size, int (*key_value_pairs)[2], heap_t min_or_
 	h->max_size = max_size ;
 	h->t = UNSET_h ;
 	if(key_value_pairs == NULL){
-		srand(time(NULL)) ;
 		h->indices = (int *)malloc( (max_size + 1) * sizeof *(h->indices)) ;
 		h->keys = (int *)malloc( (max_size + 1) * sizeof *(h->keys)) ;
 		h->values = (int *)malloc( (max_size + 1) * sizeof *(h->values)) ;

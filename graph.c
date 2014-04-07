@@ -62,18 +62,18 @@ void add_adjacency_vertex(Vertex *v, int label, int weight) {
 	v->list[v->degree - 1][1] = weight ;
 }
 
-void pv(Vertex *v){
+void pv(Vertex *v, FILE *fp){
 	int i ;
-	printf("%d -> ", v->label) ;
+	fprintf(fp, "%d -> ", v->label) ;
 	for(i = 0; i < v->degree; i++){
-		printf("[%d %d] ", v->list[i][0], v->list[i][1]);
+		fprintf(fp, "[%d %d] ", v->list[i][0], v->list[i][1]);
 	}
-	putchar('\n');
+	fputc('\n', fp);
 }
-void pg(Graph *g){
+void pg(Graph *g, FILE *fp){
 	int i;
 	for(i = 1; i <=g->V; i++){
-		pv(g->adj_list[i]) ;
+		pv(g->adj_list[i], fp) ;
 	}
 }
 
@@ -96,7 +96,6 @@ Graph *gen(int D, int V){
 	}
 	len[1] = V ;
 	min_index = 1;
-	srand(time(NULL)) ;
 	while(len[0] < V - 1){
 		int v = rand() % (V - len[0]), l, d, pl  ;
 		if( v / len[ min_index ] == 0){
