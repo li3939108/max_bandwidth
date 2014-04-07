@@ -5,13 +5,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "graph.h"
-//#include "uf.h"
 
 Vertex *new_vertex(int label){
 	Vertex *v = (Vertex *)malloc( sizeof (Vertex)) ;
 	v->degree = 0;
 	v->label = label;
-//	make_set(v);
 	v->list = NULL;
 	return  v ;
 }
