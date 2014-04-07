@@ -6,6 +6,13 @@
 #include <stdio.h>
 #include "graph.h"
 
+Vertex *new_vertex(int label){
+	Vertex *v = (Vertex *)malloc( sizeof (Vertex)) ;
+	v->degree = 0;
+	v->label = label;
+	v->list = NULL;
+	return  v ;
+}
 Graph *new_graph(int V, Vertex *vertex_list[V]){
 	int i = 0;
 	Graph * G = (Graph *)malloc( sizeof (Graph) ) ;
@@ -17,20 +24,12 @@ Graph *new_graph(int V, Vertex *vertex_list[V]){
 	for( i = 0; i < G->V ; i++){//Make the adjacency list sorted by the label
 		G->adj_list[ vertex_list[i]->label ] = vertex_list[ i  ] ;
 	}
-	G->adj_list[0] = NULL ;
+	G->adj_list[0] = new_vertex(0) ;
 	memset(G->edge_list, 0, sizeof *(G->edge_list)) ;
 	memset(G->edge_pair, 0, sizeof *(G->edge_pair)) ;
 	return G ;
 }
-Vertex *new_vertex(int label){
-	Vertex *v = (Vertex *)malloc( sizeof (Vertex)) ;
-	v->degree = 0;
-	v->label = label;
-	v->parent = v ;
-	v->rank = 0 ;
-	v->list = NULL;
-	return  v ;
-}
+
 void free_vertex(Vertex *v){
 	int i ;
 	if(v == NULL){return ;}
