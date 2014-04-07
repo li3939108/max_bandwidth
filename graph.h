@@ -30,8 +30,8 @@ extern void free_vertex(Vertex *v);
 extern void free_graph(Graph *G);
 extern void add_adjacency_vertex(Vertex *v, int label, int weight) ;
 extern Graph *gen(int D, int V) ;
-extern void pg(Graph *) ;
-extern void pv(Vertex *) ;
+extern void pg(Graph *, FILE *fp) ;
+extern void pv(Vertex *, FILE *fp) ;
 extern void edges(Graph *, FILE* output) ;
 
 #endif

@@ -181,16 +181,43 @@ int *maxbw_krsk(Graph *G, int s_label, int t_label){
 	}
 }
 
-int main(){
-	int i,j, *result, D = 6, V = 5000, s_label, t_label ;
-	Graph *G = gen(D, V) ;
+int main(int argc, char ** argv){
+	int i,j, *result, D = 1000, V = 5000, s_label, t_label ;
+
+
+	Graph *G  ;
+	FILE *out ;
 	struct timeval tv ;
 	double st, et ;
+	if(argc < 3){
+		printf("less arguments\n$ maxbw n r\n");
+		exit(EXIT_FAILURE);
+	}
+	D = atoi(argv[2]) ;
+	V = atoi(argv[1]) ;
+
+
+	srand(time(NULL)) ;
+
+
+	gettimeofday(&tv, NULL);
+	st =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
+	G = gen(D, V);
+	gettimeofday(&tv, NULL);
+	et =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
+	if((out = fopen("graph.raw", "w")) == NULL){
+		fprintf(stderr, "cannot open file to output the graph, use stdout instead\n");
+		out = stdout ;
+	}
+	pg(G, out);
+	printf("\n%d-regular graph with %d vertices generated in %fs\nweights are randomly selected between 1 to %d\nGraph data are stored in graph.raw\n------------------------------------------\n", D, V, et - st, MAX_EDGE_WEIGHT);
+
 
 for(j = 0; j < 5; j++){
 	s_label = 1 + rand() % V ;
 	t_label = 1 + rand() % V ;
-	//pg(G);
+	printf("[s:%d t:%d]", s_label, t_label) ;
+
 	printf("dkt:\n" );
 	gettimeofday(&tv, NULL);
 	st =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
@@ -199,22 +226,9 @@ for(j = 0; j < 5; j++){
 	et =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
 	printf("\n[");
 	for(i = 0; i <= 0; i++){
-		printf("%d:%d ",i, result[i] ) ;
+		printf("bandwidth: %d ",  result[i] ) ;
 	}
-	printf(", %fs]\n", et - st);
-	free(result) ;
-
-	printf("dkt_no_heap:\n" );
-	gettimeofday(&tv, NULL);
-	st =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
-	result = maxbw_dkt(G, s_label, t_label, false) ;
-	gettimeofday(&tv, NULL);
-	et =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
-	printf("\n[");
-	for(i = 0; i <= 0; i++){
-		printf("%d:%d ",i, result[i] ) ;
-	}
-	printf(", %fs]\n", et - st);
+	printf(", runtime: %fs]\n", et - st);
 	free(result) ;
 
 	printf("krsk:\n" );
@@ -225,10 +239,24 @@ for(j = 0; j < 5; j++){
 	et =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
 	printf("\n[");
 	for(i = 0; i <= 0; i++){
-		printf("%d:%d ",i,  result[i] ) ;
+		printf("bandwidth: %d ",  result[i] ) ;
 	}
-	printf(", %fs]\n", et - st);
+	printf(", runtime: %fs]\n", et - st);
 	free(result) ;
+
+	printf("dkt_no_heap:\n" );
+	gettimeofday(&tv, NULL);
+	st =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
+	result = maxbw_dkt(G, s_label, t_label, false) ;
+	gettimeofday(&tv, NULL);
+	et =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
+	printf("\n[");
+	for(i = 0; i <= 0; i++){
+		printf("bandwidth: %d ",  result[i] ) ;
+	}
+	printf(", runtime: %fs]\n", et - st);
+	free(result) ;
+
 
 	printf("-------------------------\n");
 }
