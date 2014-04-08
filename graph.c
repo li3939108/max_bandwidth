@@ -13,7 +13,7 @@ Vertex *new_vertex(int label){
 	v->list = NULL;
 	return  v ;
 }
-Graph *new_graph(int V, Vertex *vertex_list[V]){
+Graph *new_graph(int V, Vertex *vertex_list[]){
 	int i = 0;
 	Graph * G = (Graph *)malloc( sizeof (Graph) ) ;
 	G->V = V ;
