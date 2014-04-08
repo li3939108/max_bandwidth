@@ -3,6 +3,7 @@
 #include "uf.h"
 #include <stdlib.h>
 #include <time.h>
+#include <sys/time.h>
 #include <stdio.h>
 
 typedef struct _node{
@@ -28,7 +29,7 @@ int *maxbw_dkt_no_heap(Graph *G, int s_label, int t_label){
 	hash[s_label] = head ;
 	parent[s_label ] = s_label ;
 	for(i = 0; i < s->degree; i++){
-		new_node = calloc(1, sizeof *new_node) ;
+		new_node = (node *)calloc(1, sizeof *new_node) ;
 		new_node->next = head->next ;
 		head->next = new_node ;
 		new_node->key = s->list[i][0] ;
@@ -64,7 +65,7 @@ int *maxbw_dkt_no_heap(Graph *G, int s_label, int t_label){
 				hash[v_label_weight[0] ]->value = new_bandwidth ;
 				parent[ v_label_weight[ 0 ] ] = label ;
 			}else if( hash[ v_label_weight[0] ] == NULL){
-				new_node = calloc(1, sizeof *new_node) ;
+				new_node = (node *)calloc(1, sizeof *new_node) ;
 				new_node->next = head->next ;
 				head->next = new_node ;
 				new_node->key = v_label_weight[0] ;
@@ -216,25 +217,12 @@ int main(int argc, char ** argv){
 for(j = 0; j < 5; j++){
 	s_label = 1 + rand() % V ;
 	t_label = 1 + rand() % V ;
-	printf("[s:%d t:%d]", s_label, t_label) ;
+	printf("[s:%d t:%d]\n--------\n", s_label, t_label) ;
 
 	printf("dkt:\n" );
 	gettimeofday(&tv, NULL);
 	st =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
 	result = maxbw_dkt(G, s_label, t_label, true) ;
-	gettimeofday(&tv, NULL);
-	et =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
-	printf("\n[");
-	for(i = 0; i <= 0; i++){
-		printf("bandwidth: %d ",  result[i] ) ;
-	}
-	printf(", runtime: %fs]\n", et - st);
-	free(result) ;
-
-	printf("krsk:\n" );
-	gettimeofday(&tv, NULL);
-	st =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
-	result = maxbw_krsk(G, t_label, s_label) ;
 	gettimeofday(&tv, NULL);
 	et =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
 	printf("\n[");
@@ -257,6 +245,19 @@ for(j = 0; j < 5; j++){
 	printf(", runtime: %fs]\n", et - st);
 	free(result) ;
 
+
+	printf("krsk:\n" );
+	gettimeofday(&tv, NULL);
+	st =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
+	result = maxbw_krsk(G, t_label, s_label) ;
+	gettimeofday(&tv, NULL);
+	et =  (double)tv.tv_sec + (0.000001f * tv.tv_usec);
+	printf("\n[");
+	for(i = 0; i <= 0; i++){
+		printf("bandwidth: %d ",  result[i] ) ;
+	}
+	printf(", runtime: %fs]\n", et - st);
+	free(result) ;
 
 	printf("-------------------------\n");
 }

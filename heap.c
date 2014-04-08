@@ -224,7 +224,7 @@ void sort(Heap *h){
 		h->heapify(h, 1) ;
 	}
 	h->sorted = true ;
-	h->t = !h->t ;
+	h->t = (heap_t)(!h->t) ;
 	h->size = original_size ;
 }
 void free_heap(Heap *h){
