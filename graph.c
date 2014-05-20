@@ -31,7 +31,6 @@ Graph *new_graph(int V, Vertex *vertex_list[]){
 }
 
 void free_vertex(Vertex *v){
-	int i ;
 	if(v == NULL){return ;}
 	if(v->list != NULL){
 		free(v->list) ;
@@ -86,7 +85,7 @@ Graph *gen(int D, int V){
 	Vertex 
 	*(*sets)[V] = (Vertex *(*)[V])calloc(3, sizeof *sets),
 	*v1 = NULL, *v2 = NULL;
-	int dgr[3] = {-1, 0, 1}, len[3] = {0, 0, 0}, min_index, new_index, i, j ;
+	int dgr[3] = {-1, 0, 1}, len[3] = {0, 0, 0}, min_index, new_index, i ;
 	if( D  > V - 1){
 		perror("No such graph: total degree should be less than of equal to 2 x maximal number of edge") ;
 		exit(EXIT_FAILURE) ;
@@ -97,7 +96,7 @@ Graph *gen(int D, int V){
 	len[1] = V ;
 	min_index = 1;
 	while(len[0] < V - 1){
-		int v = rand() % (V - len[0]), l, d, pl  ;
+		int v = rand() % (V - len[0]), l, pl  ;
 		if( v / len[ min_index ] == 0){
 			v1 = sets[min_index][v] ;
 			memmove(sets[min_index] + v, sets[min_index] + v + 1, (len[min_index] - v - 1) * sizeof(Vertex *)) ;
