@@ -181,7 +181,7 @@ void edges(Graph * G, FILE *output){
 		}else{
 			fprintf (output, "%d  %d\n", G->V, G->E) ;		
 			for(i = 1; i <= G->E; i++){
-				fprintf(output, "%d %d\n", G->edge_pair[i][1], G->edge_pair[i][2]) ;
+				fprintf(output, "%d %d\n", G->edge_pair[i][0], G->edge_pair[i][1]) ;
 			}
 		}
 	}else{
