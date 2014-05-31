@@ -1,3 +1,6 @@
+#
+# April 2014 Chaofan Li <chaof@tamu.edu>
+#
 import random
 
 MAX_EDGE_WEIGHT = 5000
