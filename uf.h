@@ -5,12 +5,9 @@
 
 
 
-#ifndef __UF_FUN__
-	#define __UF_FUN__
+extern void merge(Vertex *v1, Vertex *v2) ;
+extern Vertex *find(Vertex *v) ;
+extern void make_set(Vertex *v1);
 
-	extern void merge(Vertex *v1, Vertex *v2) ;
-	extern Vertex *find(Vertex *v) ;
-	extern void make_set(Vertex *v1);
-	#endif
 
 #endif

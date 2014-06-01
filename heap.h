@@ -29,8 +29,6 @@ typedef struct _Heap{
 	void (*update)(struct _Heap *h, int key, int value) ;
 } Heap ;
 
-#ifndef __HEAP_FUN__
-#define __HEAP_FUN__
 
 extern void sort(Heap *h) ;
 extern int pop(Heap *h, int key) ;
@@ -40,5 +38,4 @@ extern bool has(Heap *h, int key) ;
 extern void ph(Heap *h) ;
 extern void free_heap(Heap *h) ;
 
-#endif
 #endif

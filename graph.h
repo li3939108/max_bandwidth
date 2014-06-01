@@ -24,8 +24,6 @@ typedef struct _Graph{
 	Vertex **adj_list ;
 } Graph;
 
-#ifndef __GRAPH_FUN__
-#define __GRAPH_FUN__
 
 extern Graph *new_graph(int V, Vertex *vertex_list[]) ;
 extern Vertex *new_vertex(int label) ;
@@ -37,5 +35,4 @@ extern void pg(Graph *, FILE *fp) ;
 extern void pv(Vertex *, FILE *fp) ;
 extern void edges(Graph *, FILE* output) ;
 
-#endif
 #endif

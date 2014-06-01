@@ -3,13 +3,13 @@
 #include <time.h>
 #include "heap.h"
 
-inline int left(int index){
+inline static int left(int index){
 	return index * 2 ;
 }
-inline int right(int index){
+inline static int right(int index){
 	return 1 + index * 2 ;
 }
-inline int parent(int index){
+inline static int parent(int index){
 	return index / 2 ;
 }
 void exchange(Heap *h, int index1, int index2){

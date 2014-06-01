@@ -1,4 +1,3 @@
-#define __UF_FUN__
 #include "uf.h"
 
 void make_set(Vertex *v){
