@@ -168,9 +168,10 @@ Graph *gen(int D, int V){
 		free(sets) ;
 		return G ;
 	}else{
+		Graph *G ;
 		perror("No such graph: Returned graph has a vertex with degree less than min_index") ;
 		sets[0][len[0] ] = sets[min_index][0] ;
-		Graph *G = new_graph(V, sets[0]) ;
+		G = new_graph(V, sets[0]) ;
 		free(sets) ;
 		return G ;
 	}
