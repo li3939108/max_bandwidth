@@ -58,11 +58,16 @@ void free_graph(Graph *G){
 }
 void add_adjacency_vertex(Vertex *v, int label, int weight) {
 	v->degree += 1 ;
-	v->list = (int (*)[2])realloc( v->list, v->degree * sizeof *(v->list) ) ;
+	v->list = (int (*)[LIST_SIZE])realloc( v->list, v->degree * sizeof *(v->list) ) ;
 	v->list[v->degree - 1][0] = label ;
 	v->list[v->degree - 1][1] = weight ;
 }
 
+
+void add_adjacency_vertex_with_direction(Vertex *v, int label, int weight, int direction) {
+	add_adjacency_vertex(v, label, weight) ;
+	v->list[v->degree - 1][2] = direction;
+}
 void pv(Vertex *v, FILE *fp){
 	int i ;
 	fprintf(fp, "%d -> ", v->label) ;
@@ -125,8 +130,9 @@ Graph *gen(int D, int V){
 					memmove(sets[min_index] + v, sets[min_index] + v + 1, (len[min_index] - v - 1) * sizeof(Vertex *) ) ;
 					len[min_index] -= 1 ;
 					weight = 1 + rand() % MAX_EDGE_WEIGHT ;
-					add_adjacency_vertex(v2, v1->label, weight);
-					add_adjacency_vertex(v1, v2->label, weight);
+					int direction = rand() % 2;
+					add_adjacency_vertex_with_direction(v2, v1->label, weight, direction );
+					add_adjacency_vertex_with_direction(v1, v2->label, weight, ! direction );
 					if(v2->degree == D){
 						sets[0][ len[0] ] = v2 ;
 						len[0] += 1 ;
@@ -144,8 +150,9 @@ Graph *gen(int D, int V){
 					memmove(sets[min_index] + v, sets[min_index] + v + 1, (len[min_index] - v - 1) * sizeof(Vertex *) ) ;
 					len[min_index] -= 1;//pop(v)
 					weight = 1 + rand() % MAX_EDGE_WEIGHT ;
-					add_adjacency_vertex(v2, v1->label, weight);
-					add_adjacency_vertex(v1, v2->label, weight);
+					int direction = rand() % 2 ;
+					add_adjacency_vertex_with_direction(v2, v1->label, weight, direction);
+					add_adjacency_vertex_with_direction(v1, v2->label, weight, ! direction);
 					if(v2->degree == D){
 						sets[0][ len[0] ] = v2 ;
 						len[0] += 1 ;

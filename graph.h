@@ -7,12 +7,13 @@
 #define MAX_EDGE_WEIGHT 5000000
 #include <stdio.h>
 
+#define LIST_SIZE  3 
 
 typedef struct _Vertex{
 	int degree ;
 	int label ;
 	int rank ;//for use with Make-Set-Find 
-	int (*list)[2];//[label, weight] 
+	int (*list)[LIST_SIZE];//[label, weight, direction] 
 	struct _Vertex *parent ;//for use with Make-Set-Find
 } Vertex;
 
