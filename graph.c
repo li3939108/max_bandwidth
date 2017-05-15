@@ -15,6 +15,12 @@ Vertex *new_vertex(int label){
 	v->list = NULL;
 	return  v ;
 }
+int getRandTo(int Ceiling){
+    return rand() % Ceiling ;
+}
+double getRand(int precision){
+    return 1.0 / getRandTo(precision);
+}
 Graph *new_graph(int V, Vertex *vertex_list[]){
 	int i = 0;
 	Graph * G = (Graph *)malloc( sizeof (Graph) ) ;
@@ -129,7 +135,7 @@ Graph *gen(int D, int V){
 					v2 = sets[min_index][v] ;
 					memmove(sets[min_index] + v, sets[min_index] + v + 1, (len[min_index] - v - 1) * sizeof(Vertex *) ) ;
 					len[min_index] -= 1 ;
-					weight = 1 + rand() % MAX_EDGE_WEIGHT ;
+					weight =  getRandTo( MAX_EDGE_WEIGHT );
 					int direction = rand() % 2;
 					add_adjacency_vertex_with_direction(v2, v1->label, weight, direction );
 					add_adjacency_vertex_with_direction(v1, v2->label, weight, ! direction );
@@ -149,7 +155,7 @@ Graph *gen(int D, int V){
 					v2 = sets[min_index][v] ;
 					memmove(sets[min_index] + v, sets[min_index] + v + 1, (len[min_index] - v - 1) * sizeof(Vertex *) ) ;
 					len[min_index] -= 1;//pop(v)
-					weight = 1 + rand() % MAX_EDGE_WEIGHT ;
+					weight =  getRandTo(MAX_EDGE_WEIGHT );
 					int direction = rand() % 2 ;
 					add_adjacency_vertex_with_direction(v2, v1->label, weight, direction);
 					add_adjacency_vertex_with_direction(v1, v2->label, weight, ! direction);
