@@ -5,11 +5,11 @@
 #include <time.h>
 #include <sys/time.h>
 
-typedef struct heap_node
+typedef struct linked_list_node
 {
     int key;
     int value;
-    struct heap_node *next;
+    struct linked_list_node *next;
     bool in_tree;
 } node;
 
