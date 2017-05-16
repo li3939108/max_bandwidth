@@ -106,7 +106,7 @@ void pv(Vertex *v, FILE *fp)
     fprintf(fp, "%d -> ", v->label);
     for (i = 0; i < v->degree; i++)
     {
-        fprintf(fp, "[%d %d] ", v->list[i][0], v->list[i][1]);
+        fprintf(fp, "[%d %d %d] ", v->list[i][0], v->list[i][1], v->list[i][2]);
     }
     fputc('\n', fp);
 }

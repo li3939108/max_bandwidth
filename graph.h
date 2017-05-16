@@ -47,4 +47,6 @@ extern void pv(Vertex *, FILE *fp);
 
 extern void edges(Graph *, FILE *output);
 
+extern int getRandTo(int Ceiling);
+
 #endif
