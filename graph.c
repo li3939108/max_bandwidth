@@ -14,11 +14,15 @@ Vertex *new_vertex(int label)
     v->list = NULL;
     return v;
 }
-
 int getRandTo(int Ceiling)
 {
     return rand() % Ceiling;
 }
+int getRandTo_r(int Ceiling, unsigned int *seedp)
+{
+    return rand_r(seedp) % Ceiling;
+}
+
 
 double getRand(int precision)
 {
