@@ -294,6 +294,19 @@ void edges(Graph *G, FILE *output)
         edges(G, output);
     }
 }
+void read(FILE *fp){
+    int number ;
+    while(fscanf(fp, " %d ->", &number) ){
+        int label;
+        int weight;
+        int direction;
+        printf("%d ->", number);
+        while(fscanf(fp, " [%d %d %d]", &label, &weight, &direction) ){
+            printf(" [%d %d %d] \n", label, weight, direction);
+        }
+    }
+
+}
 /*
  *uncomment this to see sample output
 int main(){
