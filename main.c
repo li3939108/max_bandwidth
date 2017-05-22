@@ -29,7 +29,7 @@ void *perform_work(void *argument)
      * Record whether a vertex is infected
      */
     char infected[V];
-    unsigned int threshold =  (1+passed_in_value );
+    unsigned int threshold = (1 + passed_in_value);
 
 
     fprintf(out, "infected[%d] : %d\n", passed_in_value,
@@ -79,74 +79,81 @@ int main(int argc, char *argv[])
     double st, et;
     if (argc < 3)
     {
-        if(argc == 1){
+        if (argc == 1)
+        {
             FILE *fp = fopen("./graph.raw", "r");
-            read(fp);
-        } else{
+            Graph *G =
+            read_graph(fp);
+            FILE *out = fopen("./graph", "w");
+            pg(G, out);
+        } else
+        {
             printf("less arguments\n$ maxbw n r\n");
-
+            exit(EXIT_FAILURE);
         }
-        exit(EXIT_FAILURE);
-    }
-    /*
-     * Degree of each vertex
-     */
-    D = atoi(argv[2]);
-    /*
-     * Number of Vertices
-     */
-    V = atoi(argv[1]);
-
-
-    srand(time(NULL));
-
-
-    gettimeofday(&tv, NULL);
-    st = (double) tv.tv_sec + (0.000001f * tv.tv_usec);
-    G = gen(D, V);
-    gettimeofday(&tv, NULL);
-    et = (double) tv.tv_sec + (0.000001f * tv.tv_usec);
-    if ((out = fopen("graph.raw", "w")) == NULL)
+    } else
     {
-        fprintf(stderr,
-                "cannot open file to output the graph, use stdout instead\n");
-        out = stdout;
+
+        /*
+         * Degree of each vertex
+         */
+        D = atoi(argv[2]);
+        /*
+         * Number of Vertices
+         */
+        V = atoi(argv[1]);
+
+
+        srand(time(NULL));
+
+
+        gettimeofday(&tv, NULL);
+        st = (double) tv.tv_sec + (0.000001f * tv.tv_usec);
+        G = gen(D, V);
+        gettimeofday(&tv, NULL);
+        et = (double) tv.tv_sec + (0.000001f * tv.tv_usec);
+        if ((out = fopen("graph.raw", "w")) == NULL)
+        {
+            fprintf(stderr,
+                    "cannot open file to output the graph, use stdout instead\n");
+            out = stdout;
+        }
+        pg(G, out);
+        printf("\n%d-regular graph with %d vertices generated in %fs\nweights are randomly selected between 1 to %d\nGraph data are stored in graph.raw\n------------------------------------------\n",
+               D, V, et - st, MAX_EDGE_WEIGHT);
+
+
+        pthread_t threads[NUM_THREADS];
+        int thread_args[NUM_THREADS];
+        int result_code;
+        unsigned index;
+
+        /*
+         * create all threads one by one
+         */
+        for (index = 0; index < NUM_THREADS; ++index)
+        {
+            thread_args[index] = index;
+            printf("In main: creating thread %d\n", index);
+            result_code = pthread_create(&threads[index], NULL,
+                                         perform_work, &thread_args[index]);
+            assert(!result_code);
+        }
+
+        /*
+         * wait for each thread to complete
+         */
+        for (index = 0; index < NUM_THREADS; ++index)
+        {
+            // block until thread 'index' completes
+            result_code = pthread_join(threads[index], NULL);
+            assert(!result_code);
+            printf("In main: thread %d has completed\n", index);
+        }
+
+        printf("In main: All threads completed successfully\n");
+        exit(EXIT_SUCCESS);
+
+
     }
-    pg(G, out);
-    printf("\n%d-regular graph with %d vertices generated in %fs\nweights are randomly selected between 1 to %d\nGraph data are stored in graph.raw\n------------------------------------------\n",
-           D, V, et - st, MAX_EDGE_WEIGHT);
-
-
-    pthread_t threads[NUM_THREADS];
-    int thread_args[NUM_THREADS];
-    int result_code;
-    unsigned index;
-
-    /*
-     * create all threads one by one
-     */
-    for (index = 0; index < NUM_THREADS; ++index)
-    {
-        thread_args[index] = index;
-        printf("In main: creating thread %d\n", index);
-        result_code = pthread_create(&threads[index], NULL,
-                                     perform_work, &thread_args[index]);
-        assert(!result_code);
-    }
-
-    /*
-     * wait for each thread to complete
-     */
-    for (index = 0; index < NUM_THREADS; ++index)
-    {
-        // block until thread 'index' completes
-        result_code = pthread_join(threads[index], NULL);
-        assert(!result_code);
-        printf("In main: thread %d has completed\n", index);
-    }
-
-    printf("In main: All threads completed successfully\n");
-    exit(EXIT_SUCCESS);
-
-
 }

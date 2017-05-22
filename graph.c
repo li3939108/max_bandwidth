@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "graph.h"
+#include <limits.h>
 
 Vertex *new_vertex(int label)
 {
@@ -294,18 +295,29 @@ void edges(Graph *G, FILE *output)
         edges(G, output);
     }
 }
-void read(FILE *fp){
-    int number ;
+Graph * read_graph(FILE *fp){
+    int  number, count = 0;
+    Vertex **vlist = NULL;
     while(fscanf(fp, " %d ->", &number) ){
         int label;
         int weight;
         int direction;
+
+        count += 1;
+        vlist = realloc(vlist, count * sizeof *vlist);
+        Vertex *curVertex = new_vertex(number);
+        vlist[count - 1] = curVertex;
+
         printf("%d ->", number);
+
         while(fscanf(fp, " [%d %d %d]", &label, &weight, &direction) ){
+            add_adjacency_vertex_with_direction(curVertex, label,
+                                                weight, direction);
+
             printf(" [%d %d %d] \n", label, weight, direction);
         }
     }
-
+    return new_graph(count, vlist);
 }
 /*
  *uncomment this to see sample output
