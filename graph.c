@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "graph.h"
-#include <limits.h>
 
 Vertex *new_vertex(int label)
 {
@@ -15,10 +14,12 @@ Vertex *new_vertex(int label)
     v->list = NULL;
     return v;
 }
+
 int getRandTo(int Ceiling)
 {
     return rand() % Ceiling;
 }
+
 int getRandTo_r(int Ceiling, unsigned int *seedp)
 {
     return rand_r(seedp) % Ceiling;
@@ -295,10 +296,13 @@ void edges(Graph *G, FILE *output)
         edges(G, output);
     }
 }
-Graph * read_graph(FILE *fp){
-    int  number, count = 0;
+
+Graph * read_graph(FILE *fp)
+{
+    int number, count = 0;
     Vertex **vlist = NULL;
-    while(fscanf(fp, " %d ->", &number) ){
+    while (fscanf(fp, " %d ->", &number) > 0)
+    {
         int label;
         int weight;
         int direction;
@@ -307,14 +311,11 @@ Graph * read_graph(FILE *fp){
         vlist = realloc(vlist, count * sizeof *vlist);
         Vertex *curVertex = new_vertex(number);
         vlist[count - 1] = curVertex;
-
-        printf("%d ->", number);
-
-        while(fscanf(fp, " [%d %d %d]", &label, &weight, &direction) ){
+        while (fscanf(fp, " [%d %d %d]", &label, &weight, &direction) > 0)
+        {
             add_adjacency_vertex_with_direction(curVertex, label,
                                                 weight, direction);
-
-            printf(" [%d %d %d] \n", label, weight, direction);
+            printf("[%d %d %d]\n", label, weight, direction);
         }
     }
     return new_graph(count, vlist);

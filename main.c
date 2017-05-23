@@ -3,6 +3,8 @@
 //
 #include <pthread.h>
 
+#include <string.h>
+
 #include "graph.h"
 #include <stdlib.h>
 #include <assert.h>
@@ -10,11 +12,12 @@
 
 #define NUM_THREADS     500
 
+#define SEED 3
 
 Graph *G;
-char seed_vertices[1] = {1};
-int V;
-FILE *out;
+int seed_vertices[1] = {SEED};
+int Ninfected[NUM_THREADS] ;
+FILE *out2;
 
 void *perform_work(void *argument)
 {
@@ -22,18 +25,16 @@ void *perform_work(void *argument)
     int passed_in_value;
     passed_in_value = *((int *) argument);
 
-    printf("Hello World! It's me, thread with argument %d!\n",
-           passed_in_value);
-
     /*
      * Record whether a vertex is infected
      */
-    char infected[V];
+    char infected[G->V];
     unsigned int threshold = (1 + passed_in_value);
+    Ninfected[passed_in_value] =
+            infect(G, 1, seed_vertices, infected, &threshold);
 
-
-    fprintf(out, "infected[%d] : %d\n", passed_in_value,
-            infect(G, 1, seed_vertices, infected, &threshold));
+    fprintf(out2, "infected[%d] : %d\n", passed_in_value,
+            Ninfected[passed_in_value] );
 
     /* optionally: insert more useful stuff here */
 
@@ -60,7 +61,7 @@ void infect_dfs(Graph *G, Vertex *v, char infected[],
     }
 }
 
-int infect(Graph *G, int Nseed, char seed[], char infected[],
+int infect(Graph *G, int Nseed, int seed[], char infected[],
            unsigned int *threshold)
 {
     int i, Ninfected = 0;
@@ -73,25 +74,34 @@ int infect(Graph *G, int Nseed, char seed[], char infected[],
 
 int main(int argc, char *argv[])
 {
-    int i, j, *result, D = 1000, s_label, t_label;
-
+    int i, j, *result,  s_label, t_label, D;
+    FILE *out_graph;
     struct timeval tv;
     double st, et;
+
+    srand(time(NULL));
+
+
+    gettimeofday(&tv, NULL);
+    st = (double) tv.tv_sec + (0.000001f * tv.tv_usec);
+    gettimeofday(&tv, NULL);
+    et = (double) tv.tv_sec + (0.000001f * tv.tv_usec);
     if (argc < 3)
     {
-        if (argc == 1)
+        if (argc == 2)
         {
-            FILE *fp = fopen("./graph.raw", "r");
-            Graph *G =
-            read_graph(fp);
-            FILE *out = fopen("./graph", "w");
-            pg(G, out);
+            FILE *fp = fopen(argv[1], "r");
+            G = read_graph(fp);
+            char out2str [200] ;
+            strcpy (out2str, argv[1]);
+            sprintf(out2str, "%s.%d", argv[1], SEED);
+            out2 = fopen(out2str, "w");
         } else
         {
             printf("less arguments\n$ maxbw n r\n");
             exit(EXIT_FAILURE);
         }
-    } else
+    } else if (argc == 3)
     {
 
         /*
@@ -101,59 +111,67 @@ int main(int argc, char *argv[])
         /*
          * Number of Vertices
          */
-        V = atoi(argv[1]);
-
-
-        srand(time(NULL));
-
-
-        gettimeofday(&tv, NULL);
-        st = (double) tv.tv_sec + (0.000001f * tv.tv_usec);
+        int V = atoi(argv[1]);
         G = gen(D, V);
-        gettimeofday(&tv, NULL);
-        et = (double) tv.tv_sec + (0.000001f * tv.tv_usec);
-        if ((out = fopen("graph.raw", "w")) == NULL)
+        if ((out2 = fopen("./infect.raw", "w")) == NULL)
         {
-            fprintf(stderr,
-                    "cannot open file to output the graph, use stdout instead\n");
-            out = stdout;
+            fprintf(stderr, "Cannot open file about infect");
+            out2 = stderr;
         }
-        pg(G, out);
-        printf("\n%d-regular graph with %d vertices generated in %fs\nweights are randomly selected between 1 to %d\nGraph data are stored in graph.raw\n------------------------------------------\n",
-               D, V, et - st, MAX_EDGE_WEIGHT);
-
-
-        pthread_t threads[NUM_THREADS];
-        int thread_args[NUM_THREADS];
-        int result_code;
-        unsigned index;
-
-        /*
-         * create all threads one by one
-         */
-        for (index = 0; index < NUM_THREADS; ++index)
-        {
-            thread_args[index] = index;
-            printf("In main: creating thread %d\n", index);
-            result_code = pthread_create(&threads[index], NULL,
-                                         perform_work, &thread_args[index]);
-            assert(!result_code);
-        }
-
-        /*
-         * wait for each thread to complete
-         */
-        for (index = 0; index < NUM_THREADS; ++index)
-        {
-            // block until thread 'index' completes
-            result_code = pthread_join(threads[index], NULL);
-            assert(!result_code);
-            printf("In main: thread %d has completed\n", index);
-        }
-
-        printf("In main: All threads completed successfully\n");
-        exit(EXIT_SUCCESS);
-
-
     }
+    if ((out_graph = fopen("./graph.raw", "w")) == NULL)
+    {
+        fprintf(stderr,
+                "cannot open file to output the graph, use stdout instead\n");
+        out_graph = stdout;
+    }
+
+
+    pg(G, out_graph);
+    printf("\n%d-regular graph with %d vertices generated in %fs\nweights are randomly selected between 1 to %d\nGraph data are stored in graph.raw\n------------------------------------------\n",
+           D, G->V, et - st, MAX_EDGE_WEIGHT);
+
+
+    pthread_t threads[NUM_THREADS];
+    int thread_args[NUM_THREADS];
+    int result_code;
+    unsigned index;
+
+    /*
+     * create all threads one by one
+     */
+    for (index = 0; index < NUM_THREADS; ++index)
+    {
+        thread_args[index] = index;
+        result_code = pthread_create(&threads[index], NULL,
+                                     perform_work, &thread_args[index]);
+        assert(!result_code);
+    }
+
+    /*
+     * wait for each thread to complete
+     */
+    for (index = 0; index < NUM_THREADS; ++index)
+    {
+        // block until thread 'index' completes
+        result_code = pthread_join(threads[index], NULL);
+        assert(!result_code);
+    }
+
+    printf("In main: All threads completed successfully\n");
+
+    /*
+     * To calculate the MEAN
+     */
+    long  sum = 0 ;
+    for( i = 0 ; i < NUM_THREADS ; ++i){
+        sum += Ninfected[i] ;
+    }
+    fprintf(out2, "sum: %d\nmean : %f \n ", sum, sum / (0.0 + NUM_THREADS ) ) ;
+    fclose(out2);
+    fclose(out_graph);
+
+    exit(EXIT_SUCCESS);
+
+
 }
