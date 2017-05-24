@@ -22,7 +22,13 @@ int getRandTo(int Ceiling)
 
 int getRandTo_r(int Ceiling, unsigned int *seedp)
 {
+#ifdef __MINGW32__
+    return rand() % Ceiling ;
+#else
     return rand_r(seedp) % Ceiling;
+#endif
+
+
 }
 
 

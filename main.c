@@ -16,30 +16,9 @@
 
 Graph *G;
 int seed_vertices[1] = {SEED};
-int Ninfected[NUM_THREADS] ;
+int Ninfected[NUM_THREADS];
 FILE *out2;
 
-void *perform_work(void *argument)
-{
-
-    int passed_in_value;
-    passed_in_value = *((int *) argument);
-
-    /*
-     * Record whether a vertex is infected
-     */
-    char infected[G->V];
-    unsigned int threshold = (1 + passed_in_value);
-    Ninfected[passed_in_value] =
-            infect(G, 1, seed_vertices, infected, &threshold);
-
-    fprintf(out2, "infected[%d] : %d\n", passed_in_value,
-            Ninfected[passed_in_value] );
-
-    /* optionally: insert more useful stuff here */
-
-    return NULL;
-}
 
 void infect_dfs(Graph *G, Vertex *v, char infected[],
                 unsigned int *threshold, int *Ninfected_ptr)
@@ -72,9 +51,29 @@ int infect(Graph *G, int Nseed, int seed[], char infected[],
     return Ninfected;
 }
 
+void *perform_work(void *argument)
+{
+
+    int passed_in_value;
+    passed_in_value = *((int *) argument);
+
+    /*
+     * Record whether a vertex is infected
+     */
+    char infected[G->V];
+    unsigned int threshold = (1 + passed_in_value);
+    Ninfected[passed_in_value] =
+            infect(G, 1, seed_vertices, infected, &threshold);
+
+    fprintf(out2, "infected[%d] : %d\n", passed_in_value,
+            Ninfected[passed_in_value]);
+
+    return NULL;
+}
+
 int main(int argc, char *argv[])
 {
-    int i, j, *result,  s_label, t_label, D;
+    int i, j, *result, s_label, t_label, D;
     FILE *out_graph;
     struct timeval tv;
     double st, et;
@@ -92,8 +91,8 @@ int main(int argc, char *argv[])
         {
             FILE *fp = fopen(argv[1], "r");
             G = read_graph(fp);
-            char out2str [200] ;
-            strcpy (out2str, argv[1]);
+            char out2str[200];
+            strcpy(out2str, argv[1]);
             sprintf(out2str, "%s.%d", argv[1], SEED);
             out2 = fopen(out2str, "w");
         } else
@@ -163,11 +162,12 @@ int main(int argc, char *argv[])
     /*
      * To calculate the MEAN
      */
-    long  sum = 0 ;
-    for( i = 0 ; i < NUM_THREADS ; ++i){
-        sum += Ninfected[i] ;
+    long sum = 0;
+    for (i = 0; i < NUM_THREADS; ++i)
+    {
+        sum += Ninfected[i];
     }
-    fprintf(out2, "sum: %d\nmean : %f \n ", sum, sum / (0.0 + NUM_THREADS ) ) ;
+    fprintf(out2, "sum: %d\nmean : %f \n ", sum, sum / (0.0 + NUM_THREADS));
     fclose(out2);
     fclose(out_graph);
 
