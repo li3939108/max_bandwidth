@@ -12,7 +12,7 @@
 
 #define NUM_THREADS     500
 
-#define SEED 101
+#define SEED 102
 
 Graph *G;
 int seed_vertices[1] = {SEED};
@@ -62,6 +62,9 @@ void *perform_work(void *argument)
      */
     char infected[G->V];
     unsigned int threshold = (1 + passed_in_value);
+#ifdef __MINGW32__
+    srand(threshold);
+#endif
     Ninfected[passed_in_value] =
             infect(G, 1, seed_vertices, infected, &threshold);
 
@@ -127,7 +130,9 @@ int main(int argc, char *argv[])
 
 
     pg(G, out_graph);
-    printf("\n%d-regular graph with %d vertices generated in %fs\nweights are randomly selected between 1 to %d\nGraph data are stored in graph.raw\n------------------------------------------\n",
+    printf("\n%d-regular graph with %d vertices generated in %fs\nweights are \
+randomly selected between 1 to %d\nGraph data are stored in graph.raw\n \
+------------------------------------------\n" ,
            D, G->V, et - st, MAX_EDGE_WEIGHT);
 
 
