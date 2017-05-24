@@ -12,7 +12,7 @@
 
 #define NUM_THREADS     500
 
-#define SEED 3
+#define SEED 101
 
 Graph *G;
 int seed_vertices[1] = {SEED};
