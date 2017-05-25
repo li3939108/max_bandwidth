@@ -8,6 +8,12 @@
 
 #include <stdio.h>
 
+#ifdef __CYGWIN__
+typedef unsigned int reent;
+#else
+typedef struct drand48_data reent;
+#endif
+
 #define LIST_SIZE  3
 
 typedef struct _Vertex
@@ -49,8 +55,10 @@ extern void edges(Graph *, FILE *output);
 
 extern int getRandTo(int Ceiling);
 
-extern int getRandTo_r(int Ceiling, struct drand48_data *seedp);
+extern int getRandTo_r(int Ceiling, reent *seedp);
 
 extern Graph *read_graph(FILE *fp);
 
+void print_distribution(FILE * fp, int Ninfected[],
+                        int num_threads, int V, int w);
 #endif

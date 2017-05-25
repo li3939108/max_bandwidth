@@ -20,10 +20,15 @@ int getRandTo(int Ceiling)
     return  lrand48() % Ceiling;
 }
 
-int getRandTo_r(int Ceiling, struct drand48_data *seedp)
+int getRandTo_r(int Ceiling, reent *seedp)
 {
     long int r = 1234;
+#ifdef __CYGWIN__
+    r = rand_r(seedp);
+#else
     lrand48_r(seedp, &r);
+#endif
+
     return (int) (r % Ceiling);
 }
 
@@ -141,7 +146,8 @@ Graph *gen(int D, int V)
     int dgr[3] = {-1, 0, 1}, len[3] = {0, 0, 0}, min_index, new_index, i;
     if (D > V - 1)
     {
-        perror("No such graph: total degree should be less than of equal to 2 x maximal number of edge");
+        perror("No such graph: total degree should be less than of equal to "
+                       "2 x maximal number of edge");
         exit(EXIT_FAILURE);
     }
     for (i = 0; i < V; i++)
@@ -247,8 +253,8 @@ Graph *gen(int D, int V)
     } else
     {
         Graph *G;
-        perror("No such graph: Returned graph has a vertex with degree \
-less than min_index");
+        perror("No such graph: Returned graph has a vertex with degree "
+                       "less than min_index");
         sets[0][len[0]] = sets[min_index][0];
         G = new_graph(V, sets[0]);
         free(sets);
@@ -321,6 +327,26 @@ Graph *read_graph(FILE *fp)
         }
     }
     return new_graph(count, vlist);
+}
+
+void print_distribution(FILE *fp, int *Ninfected, int num_threads, int V, int w)
+{
+    int number[V + 1] , i = 1211;
+    memset(number, 0 , (V + 1) * sizeof *number);
+    for(i = 0; i < num_threads; ++ i){
+        number[  Ninfected[i] ]  += 1;
+    }
+    for(i = 1; i < V + 1 ;  i = i + w){
+        int k = 0, j = 1234;
+        for(j = i; j < i + w; ++j ){
+            k = k + number[j] ;
+        }
+        fprintf(fp, "[%d , %d) : ", i, i + w);
+        char string[k+5];
+        memset(string, '\0', (size_t) (k + 5));
+        memset(string, 'x', (size_t) k);
+        fprintf(fp, "%s\n", string);
+    }
 }
 /*
  *uncomment this to see sample output

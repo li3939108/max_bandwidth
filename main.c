@@ -10,7 +10,7 @@
 #include <sys/time.h>
 #include <memory.h>
 
-#define NUM_THREADS     1000
+#define NUM_THREADS     5000
 
 #define SEED 1
 
@@ -21,7 +21,7 @@ FILE *out2;
 
 
 void infect_dfs(Graph *G, Vertex *v, char *infected,
-                struct drand48_data *seedp, int *Ninfected_ptr)
+                reent *seedp, int *Ninfected_ptr)
 {
     int j;
 
@@ -41,7 +41,7 @@ void infect_dfs(Graph *G, Vertex *v, char *infected,
 }
 
 int infect(Graph *G, int Nseed, int *seed, char *infected,
-           struct drand48_data *seedp)
+           reent *seedp)
 {
     int i, Ninfected = 0;
     for (i = 0; i < Nseed; ++i)
@@ -61,9 +61,13 @@ void *perform_work(void *argument)
      * Record whether a vertex is infected
      */
     char infected[G->V];
-    unsigned int seed_int = ( 1 + passed_in_value);
+    unsigned long seed_int = (unsigned long) (1 + passed_in_value);
+#ifdef __CYGWIN__
+    reent seed = (reent) (seed_int * 100 + time(NULL) % 99888);
+#else
     struct drand48_data seed ;
     srand48_r(seed_int, &seed);
+#endif
     Ninfected[passed_in_value] =
             infect(G, 1, seed_vertices, infected, &seed);
 
@@ -80,7 +84,7 @@ int main(int argc, char *argv[])
     struct timeval tv;
     double st, et;
 
-    srand(time(NULL));
+    srand((unsigned int) time(NULL));
 
 
     gettimeofday(&tv, NULL);
@@ -129,9 +133,10 @@ int main(int argc, char *argv[])
 
 
     pg(G, out_graph);
-    printf("\n%d-regular graph with %d vertices generated in %fs\nweights are \
-randomly selected between 1 to %d\nGraph data are stored in graph.raw\n \
-------------------------------------------\n" ,
+    printf("\n%d-regular graph with %d vertices generated in %fs\nweights are "
+                   "randomly selected between 1 to %d\n"
+                   "Graph data are stored in graph.raw\n"
+                   "------------------------------------------\n" ,
            D, G->V, et - st, MAX_EDGE_WEIGHT);
 
 
@@ -173,6 +178,7 @@ randomly selected between 1 to %d\nGraph data are stored in graph.raw\n \
     }
     fprintf(out2, "sum: %d\nmean : %f \n ", sum, sum / (0.0 + NUM_THREADS));
     printf( "sum: %d\nmean : %f \n ", sum, sum / (0.0 + NUM_THREADS));
+    print_distribution(stdout, Ninfected, NUM_THREADS, G->V, 25);
     fclose(out2);
     fclose(out_graph);
 
