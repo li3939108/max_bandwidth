@@ -17,18 +17,12 @@ Vertex *new_vertex(int label)
 
 int getRandTo(int Ceiling)
 {
-    return rand() % Ceiling;
+    return  lrand48() % Ceiling;
 }
 
 int getRandTo_r(int Ceiling, unsigned int *seedp)
 {
-#ifdef __MINGW32__
-    return rand() % Ceiling ;
-#else
-    return rand_r(seedp) % Ceiling;
-#endif
-
-
+    return  rand_r(seedp) % Ceiling ;
 }
 
 
@@ -251,7 +245,8 @@ Graph *gen(int D, int V)
     } else
     {
         Graph *G;
-        perror("No such graph: Returned graph has a vertex with degree less than min_index");
+        perror("No such graph: Returned graph has a vertex with degree \
+less than min_index");
         sets[0][len[0]] = sets[min_index][0];
         G = new_graph(V, sets[0]);
         free(sets);
@@ -303,7 +298,7 @@ void edges(Graph *G, FILE *output)
     }
 }
 
-Graph * read_graph(FILE *fp)
+Graph *read_graph(FILE *fp)
 {
     int number, count = 0;
     Vertex **vlist = NULL;

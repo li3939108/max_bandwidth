@@ -51,5 +51,6 @@ extern int getRandTo(int Ceiling);
 
 extern int getRandTo_r(int Ceiling, unsigned int *seedp);
 
-extern Graph * read_graph(FILE *fp);
+extern Graph *read_graph(FILE *fp);
+
 #endif
