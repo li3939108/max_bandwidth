@@ -3,16 +3,16 @@
 //
 #include <pthread.h>
 
-#include <string.h>
 
 #include "graph.h"
 #include <stdlib.h>
 #include <assert.h>
 #include <sys/time.h>
+#include <memory.h>
 
-#define NUM_THREADS     500
+#define NUM_THREADS     1000
 
-#define SEED 102
+#define SEED 101
 
 Graph *G;
 int seed_vertices[1] = {SEED};
@@ -21,7 +21,7 @@ FILE *out2;
 
 
 void infect_dfs(Graph *G, Vertex *v, char infected[],
-                unsigned int *threshold, int *Ninfected_ptr)
+                unsigned int *seedp, int *Ninfected_ptr)
 {
     int j;
 
@@ -31,22 +31,22 @@ void infect_dfs(Graph *G, Vertex *v, char infected[],
     for (j = 0; j < v->degree; ++j)
     {
         if (v->list[j][2] == 0
-            && v->list[j][1] > getRandTo_r(MAX_EDGE_WEIGHT, threshold)
-            && (!infected[v->list[j][0]]))
+            && v->list[j][1] >  getRandTo_r(MAX_EDGE_WEIGHT, seedp)
+            && (!infected[v->list[j][0]]) )
         {
             infect_dfs(G, G->adj_list[v->list[j][0]],
-                       infected, threshold, Ninfected_ptr);
+                       infected, seedp, Ninfected_ptr);
         }
     }
 }
 
 int infect(Graph *G, int Nseed, int seed[], char infected[],
-           unsigned int *threshold)
+           unsigned int *seedp)
 {
     int i, Ninfected = 0;
     for (i = 0; i < Nseed; ++i)
     {
-        infect_dfs(G, G->adj_list[seed[i]], infected, threshold, &Ninfected);
+        infect_dfs(G, G->adj_list[seed[i]], infected, seedp, &Ninfected);
     }
     return Ninfected;
 }
@@ -61,12 +61,9 @@ void *perform_work(void *argument)
      * Record whether a vertex is infected
      */
     char infected[G->V];
-    unsigned int threshold = (1 + passed_in_value);
-#ifdef __MINGW32__
-    srand(threshold);
-#endif
+    unsigned int seed = ( 1 + passed_in_value);
     Ninfected[passed_in_value] =
-            infect(G, 1, seed_vertices, infected, &threshold);
+            infect(G, 1, seed_vertices, infected, &seed);
 
     fprintf(out2, "infected[%d] : %d\n", passed_in_value,
             Ninfected[passed_in_value]);
@@ -173,6 +170,7 @@ randomly selected between 1 to %d\nGraph data are stored in graph.raw\n \
         sum += Ninfected[i];
     }
     fprintf(out2, "sum: %d\nmean : %f \n ", sum, sum / (0.0 + NUM_THREADS));
+    printf( "sum: %d\nmean : %f \n ", sum, sum / (0.0 + NUM_THREADS));
     fclose(out2);
     fclose(out_graph);
 
