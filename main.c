@@ -10,29 +10,39 @@
 #include <sys/time.h>
 #include <memory.h>
 
+//#define WITH_INFECTED_COUNT
 #define NUM_THREADS     5000
 
-#define SEED 1
+#define SEED 8
+
 
 Graph *G;
-int seed_vertices[1] = {SEED};
+#define N_SEED 1
+int seed_vertices[N_SEED] = {SEED, SEED + 1000};
 int Ninfected[NUM_THREADS];
 FILE *out2;
 
+float multithread_infect(char out2str[]);
 
 void infect_dfs(Graph *G, Vertex *v, char *infected,
                 reent *seedp, int *Ninfected_ptr)
 {
     int j;
 
-    *Ninfected_ptr = *Ninfected_ptr + 1;
-    infected[v->label] = 1;
+    if (infected[v->label] == 1)
+    {
+        return;
+    } else
+    {
+        *Ninfected_ptr = *Ninfected_ptr + 1;
+        infected[v->label] = 1;
+    }
 
     for (j = 0; j < v->degree; ++j)
     {
         if (v->list[j][2] == 0
-            && v->list[j][1] >  getRandTo_r(MAX_EDGE_WEIGHT, seedp)
-            && (!infected[v->list[j][0]]) )
+            && v->list[j][1] > getRandTo_r(MAX_EDGE_WEIGHT, seedp))
+            //&& (!infected[v->list[j][0]]) )
         {
             infect_dfs(G, G->adj_list[v->list[j][0]],
                        infected, seedp, Ninfected_ptr);
@@ -51,6 +61,24 @@ int infect(Graph *G, int Nseed, int *seed, char *infected,
     return Ninfected;
 }
 
+void stable_infect(int V)
+{
+    int initial_number_of_seed = 0, i = 0x323;
+    int seed_vertices[V + 1];
+    int Ninfected_mean[V];
+
+    memset(Ninfected_mean, 0, V * sizeof *Ninfected_mean);
+    for (i = 0; i < V - 1; ++i)
+    {
+        int j;
+        for (j = 1; j <= V; ++j)
+        {
+            seed_vertices[i] = j;
+        }
+    }
+
+}
+
 void *perform_work(void *argument)
 {
 
@@ -61,6 +89,7 @@ void *perform_work(void *argument)
      * Record whether a vertex is infected
      */
     char infected[G->V];
+    memset(infected, 0, G->V * sizeof *infected);
     unsigned long seed_int = (unsigned long) (1 + passed_in_value);
 #ifdef __CYGWIN__
     reent seed = (reent) (seed_int * 100 + time(NULL) % 99888);
@@ -69,7 +98,7 @@ void *perform_work(void *argument)
     srand48_r(seed_int, &seed);
 #endif
     Ninfected[passed_in_value] =
-            infect(G, 1, seed_vertices, infected, &seed);
+            infect(G, N_SEED, seed_vertices, infected, &seed);
 
     fprintf(out2, "infected[%d] : %d\n", passed_in_value,
             Ninfected[passed_in_value]);
@@ -79,10 +108,11 @@ void *perform_work(void *argument)
 
 int main(int argc, char *argv[])
 {
-    int i, j, *result, s_label, t_label, D;
+    int j, *result, s_label, t_label, D;
     FILE *out_graph;
     struct timeval tv;
     double st, et;
+    char out2str[200];
 
     srand((unsigned int) time(NULL));
 
@@ -97,10 +127,13 @@ int main(int argc, char *argv[])
         {
             FILE *fp = fopen(argv[1], "r");
             G = read_graph(fp);
-            char out2str[200];
+
+#ifdef WITH_INFECTED_COUNT
             strcpy(out2str, argv[1]);
             sprintf(out2str, "%s.%d", argv[1], SEED);
-            out2 = fopen(out2str, "w");
+#else
+            strcpy(out2str, "/dev/null");
+#endif
         } else
         {
             printf("less arguments\n$ maxbw n r\n");
@@ -118,11 +151,7 @@ int main(int argc, char *argv[])
          */
         int V = atoi(argv[1]);
         G = gen(D, V);
-        if ((out2 = fopen("./infect.raw", "w")) == NULL)
-        {
-            fprintf(stderr, "Cannot open file about infect");
-            out2 = stderr;
-        }
+        strcpy(out2str, "infect.raw");
     }
     if ((out_graph = fopen("./graph.raw", "w")) == NULL)
     {
@@ -136,15 +165,26 @@ int main(int argc, char *argv[])
     printf("\n%d-regular graph with %d vertices generated in %fs\nweights are "
                    "randomly selected between 1 to %d\n"
                    "Graph data are stored in graph.raw\n"
-                   "------------------------------------------\n" ,
+                   "------------------------------------------\n",
            D, G->V, et - st, MAX_EDGE_WEIGHT);
 
 
+    multithread_infect(out2str);
+
+    fclose(out_graph);
+
+    exit(EXIT_SUCCESS);
+
+}
+
+float multithread_infect(char out2str[])
+{
     pthread_t threads[NUM_THREADS];
     int thread_args[NUM_THREADS];
     int result_code;
-    unsigned index;
+    unsigned index, i;
 
+    out2 = fopen(out2str, "w");
     /*
      * create all threads one by one
      */
@@ -176,13 +216,10 @@ int main(int argc, char *argv[])
     {
         sum += Ninfected[i];
     }
-    fprintf(out2, "sum: %d\nmean : %f \n ", sum, sum / (0.0 + NUM_THREADS));
-    printf( "sum: %d\nmean : %f \n ", sum, sum / (0.0 + NUM_THREADS));
+    float mean = (float) (sum / (0.0 + NUM_THREADS));
+    fprintf(out2, "sum: %ld\nmean : %f \n ", sum, mean);
+    printf("sum: %ld\nmean : %f \n ", sum, mean);
     print_distribution(stdout, Ninfected, NUM_THREADS, G->V, 25);
     fclose(out2);
-    fclose(out_graph);
-
-    exit(EXIT_SUCCESS);
-
-
+    return mean;
 }
