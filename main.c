@@ -20,8 +20,8 @@ int Ninfected[NUM_THREADS];
 FILE *out2;
 
 
-void infect_dfs(Graph *G, Vertex *v, char infected[],
-                unsigned int *seedp, int *Ninfected_ptr)
+void infect_dfs(Graph *G, Vertex *v, char *infected,
+                struct drand48_data *seedp, int *Ninfected_ptr)
 {
     int j;
 
@@ -40,8 +40,8 @@ void infect_dfs(Graph *G, Vertex *v, char infected[],
     }
 }
 
-int infect(Graph *G, int Nseed, int seed[], char infected[],
-           unsigned int *seedp)
+int infect(Graph *G, int Nseed, int *seed, char *infected,
+           struct drand48_data *seedp)
 {
     int i, Ninfected = 0;
     for (i = 0; i < Nseed; ++i)
@@ -61,7 +61,9 @@ void *perform_work(void *argument)
      * Record whether a vertex is infected
      */
     char infected[G->V];
-    unsigned int seed = ( 1 + passed_in_value);
+    unsigned int seed_int = ( 1 + passed_in_value);
+    struct drand48_data seed ;
+    srand48_r(seed_int, &seed);
     Ninfected[passed_in_value] =
             infect(G, 1, seed_vertices, infected, &seed);
 

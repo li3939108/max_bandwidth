@@ -20,9 +20,11 @@ int getRandTo(int Ceiling)
     return  lrand48() % Ceiling;
 }
 
-int getRandTo_r(int Ceiling, unsigned int *seedp)
+int getRandTo_r(int Ceiling, struct drand48_data *seedp)
 {
-    return  rand_r(seedp) % Ceiling ;
+    long int r = 1234;
+    lrand48_r(seedp, &r);
+    return (int) (r % Ceiling);
 }
 
 
@@ -316,7 +318,6 @@ Graph *read_graph(FILE *fp)
         {
             add_adjacency_vertex_with_direction(curVertex, label,
                                                 weight, direction);
-            printf("[%d %d %d]\n", label, weight, direction);
         }
     }
     return new_graph(count, vlist);

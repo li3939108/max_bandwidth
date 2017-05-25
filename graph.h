@@ -49,7 +49,7 @@ extern void edges(Graph *, FILE *output);
 
 extern int getRandTo(int Ceiling);
 
-extern int getRandTo_r(int Ceiling, unsigned int *seedp);
+extern int getRandTo_r(int Ceiling, struct drand48_data *seedp);
 
 extern Graph *read_graph(FILE *fp);
 
