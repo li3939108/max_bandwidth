@@ -15,7 +15,6 @@
 #define NUM_THREADS     5000
 #define SEED            8
 #define N_SEED          1
-#define TH              1.0
 
 Graph *G;
 
@@ -25,7 +24,7 @@ int n_seed = N_SEED;
 int Ninfected[NUM_THREADS];
 FILE *out2;
 
-float multithread_infect(char out2str[]);
+int multithread_infect(char *out2str);
 
 void infect_dfs(Graph *G, Vertex *v, char *infected,
                 reent *seedp, int *Ninfected_ptr)
@@ -67,8 +66,8 @@ void stable_infect()
 {
     FILE *info = stdout ;
     int V = G->V, initial_number_of_seed = 0, i = 0x323;
-    float Ninfected_mean[V + 1];
-    float mean = FLT_MIN ;
+    int Ninfected_mean[V + 1];
+    int mean = 0 ;
     char seeds[V + 1];
 
     memset(Ninfected_mean, 0, V * sizeof *Ninfected_mean);
@@ -77,7 +76,7 @@ void stable_infect()
     for (i = initial_number_of_seed; i < V - 1; ++i)
     {
         int new_seed_label;
-        float max_mean = FLT_MIN;
+        int max_mean = 0;
         int max_mean_label = 0x12121;
 
         n_seed = i + 1;
@@ -90,7 +89,7 @@ void stable_infect()
                 seed_vertices[i] = new_seed_label;
                 fprintf(info, "new_seed: %d\n", new_seed_label);
 
-                float new_mean = multithread_infect("/dev/null");
+                int new_mean = multithread_infect("/dev/null");
                 Ninfected_mean[new_seed_label] = new_mean;
                 if (max_mean < new_mean)
                 {
@@ -100,11 +99,11 @@ void stable_infect()
             }
 
         }
-        if (max_mean - mean > TH) {
+        if (max_mean - mean > G->V / 500) {
             seed_vertices[i] = max_mean_label ;
             seeds[ max_mean_label ] = 1 ;
             mean = max_mean ;
-            fprintf(info, "new seed: %d, mean : %f \n ", max_mean_label, max_mean);
+            fprintf(info, "new seed: %d, mean : %d \n ", max_mean_label, max_mean);
         } else {
             fprintf(info, "No improvement !!!! \n");
             break ;
@@ -215,7 +214,7 @@ int main(int argc, char *argv[])
 
 }
 
-float multithread_infect(char out2str[])
+int multithread_infect(char *out2str)
 {
     pthread_t threads[NUM_THREADS];
     int thread_args[NUM_THREADS];
@@ -254,9 +253,9 @@ float multithread_infect(char out2str[])
     {
         sum += Ninfected[i];
     }
-    float mean = (float) (sum / (0.0 + NUM_THREADS));
-    fprintf(out2, "sum: %ld\nmean : %f \n ", sum, mean);
-    printf("sum: %ld\nmean : %f \n ", sum, mean);
+    int mean = (int) (sum /  NUM_THREADS);
+    fprintf(out2, "sum: %ld\nmean : %d \n ", sum, mean);
+    printf("sum: %ld\nmean : %d \n ", sum, mean);
     //print_distribution(stdout, Ninfected, NUM_THREADS, G->V, 25);
     fclose(out2);
     return mean;
