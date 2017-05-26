@@ -243,19 +243,18 @@ int multithread_infect(char *out2str)
         assert(!result_code);
     }
 
-    printf("In main: All threads completed successfully\n");
 
     /*
      * To calculate the MEAN
      */
-    long sum = 0;
+    int32_t sum = 0;
     for (i = 0; i < NUM_THREADS; ++i)
     {
         sum += Ninfected[i];
     }
-    int mean = (int) (sum /  NUM_THREADS);
-    fprintf(out2, "sum: %ld\nmean : %d \n ", sum, mean);
-    printf("sum: %ld\nmean : %d \n ", sum, mean);
+    float mean = ( (float) sum) /  ( (float) NUM_THREADS );
+    fprintf(out2, "sum: %f\nmean : %d \n ", sum, mean);
+//    printf("sum: %ld\nmean : %d \n ", sum, mean);
     //print_distribution(stdout, Ninfected, NUM_THREADS, G->V, 25);
     fclose(out2);
     return mean;
