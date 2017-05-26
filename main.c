@@ -8,17 +8,20 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <sys/time.h>
+#include <float.h>
 #include <memory.h>
 
 //#define WITH_INFECTED_COUNT
 #define NUM_THREADS     5000
-
-#define SEED 8
-
+#define SEED            8
+#define N_SEED          1
+#define TH              1.0
 
 Graph *G;
-#define N_SEED 1
-int seed_vertices[N_SEED] = {SEED, SEED + 1000};
+
+int *seed_vertices = NULL;
+int n_seed = N_SEED;
+
 int Ninfected[NUM_THREADS];
 FILE *out2;
 
@@ -42,7 +45,6 @@ void infect_dfs(Graph *G, Vertex *v, char *infected,
     {
         if (v->list[j][2] == 0
             && v->list[j][1] > getRandTo_r(MAX_EDGE_WEIGHT, seedp))
-            //&& (!infected[v->list[j][0]]) )
         {
             infect_dfs(G, G->adj_list[v->list[j][0]],
                        infected, seedp, Ninfected_ptr);
@@ -61,19 +63,51 @@ int infect(Graph *G, int Nseed, int *seed, char *infected,
     return Ninfected;
 }
 
-void stable_infect(int V)
+void stable_infect()
 {
-    int initial_number_of_seed = 0, i = 0x323;
-    int seed_vertices[V + 1];
-    int Ninfected_mean[V];
+    FILE *info = stdout ;
+    int V = G->V, initial_number_of_seed = 0, i = 0x323;
+    float Ninfected_mean[V + 1];
+    float mean = FLT_MIN ;
+    char seeds[V + 1];
 
     memset(Ninfected_mean, 0, V * sizeof *Ninfected_mean);
-    for (i = 0; i < V - 1; ++i)
+    memset(seeds, 0, (V + 1) * sizeof *seeds);
+    seed_vertices = calloc((size_t) (V + 5), sizeof *seed_vertices);
+    for (i = initial_number_of_seed; i < V - 1; ++i)
     {
-        int j;
-        for (j = 1; j <= V; ++j)
+        int new_seed_label;
+        float max_mean = FLT_MIN;
+        int max_mean_label = 0x12121;
+
+        n_seed = i + 1;
+        fprintf(info, "#seed: %d\n", n_seed) ;
+        memset(Ninfected_mean, 0, (V + 1) * sizeof *Ninfected_mean);
+        for (new_seed_label = 1; new_seed_label <= V; ++new_seed_label)
         {
-            seed_vertices[i] = j;
+            if (!seeds[new_seed_label])
+            {
+                seed_vertices[i] = new_seed_label;
+                fprintf(info, "new_seed: %d\n", new_seed_label);
+
+                float new_mean = multithread_infect("/dev/null");
+                Ninfected_mean[new_seed_label] = new_mean;
+                if (max_mean < new_mean)
+                {
+                    max_mean = new_mean;
+                    max_mean_label = new_seed_label;
+                }
+            }
+
+        }
+        if (max_mean - mean > TH) {
+            seed_vertices[i] = max_mean_label ;
+            seeds[ max_mean_label ] = 1 ;
+            mean = max_mean ;
+            fprintf(info, "new seed: %d, mean : %f \n ", max_mean_label, max_mean);
+        } else {
+            fprintf(info, "No improvement !!!! \n");
+            break ;
         }
     }
 
@@ -98,7 +132,7 @@ void *perform_work(void *argument)
     srand48_r(seed_int, &seed);
 #endif
     Ninfected[passed_in_value] =
-            infect(G, N_SEED, seed_vertices, infected, &seed);
+            infect(G, n_seed, seed_vertices, infected, &seed);
 
     fprintf(out2, "infected[%d] : %d\n", passed_in_value,
             Ninfected[passed_in_value]);
@@ -169,7 +203,11 @@ int main(int argc, char *argv[])
            D, G->V, et - st, MAX_EDGE_WEIGHT);
 
 
-    multithread_infect(out2str);
+    seed_vertices = calloc((size_t) G->V, sizeof *seed_vertices);
+    seed_vertices[0] = SEED;
+    seed_vertices[1] = SEED + 1002;
+    //multithread_infect(out2str);
+    stable_infect() ;
 
     fclose(out_graph);
 
@@ -219,7 +257,7 @@ float multithread_infect(char out2str[])
     float mean = (float) (sum / (0.0 + NUM_THREADS));
     fprintf(out2, "sum: %ld\nmean : %f \n ", sum, mean);
     printf("sum: %ld\nmean : %f \n ", sum, mean);
-    print_distribution(stdout, Ninfected, NUM_THREADS, G->V, 25);
+    //print_distribution(stdout, Ninfected, NUM_THREADS, G->V, 25);
     fclose(out2);
     return mean;
 }
