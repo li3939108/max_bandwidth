@@ -348,6 +348,19 @@ void print_distribution(FILE *fp, int *Ninfected, int num_threads, int V, int w)
         fprintf(fp, "%s\n", string);
     }
 }
+
+void print_seeds(FILE *fp, int *seed_vertices, int n_seed, int column)
+{
+    int i = 0xffee, j = 0xffef;
+
+    fprintf(fp, "Total number of seeds: %d", n_seed);
+    for(i = 0; i < n_seed; i = i + column){
+        for(j = i; j < i + column; ++j){
+            fprintf(fp, "%d ", seed_vertices[j]);
+        }
+        fputc('\n', fp);
+    }
+}
 /*
  *uncomment this to see sample output
 int main(){

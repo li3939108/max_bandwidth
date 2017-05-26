@@ -61,4 +61,7 @@ extern Graph *read_graph(FILE *fp);
 
 void print_distribution(FILE * fp, int Ninfected[],
                         int num_threads, int V, int w);
+
+void print_seeds(FILE *fp, int seed_vertices[], int n_seed , int column );
+
 #endif
