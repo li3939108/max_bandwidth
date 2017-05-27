@@ -7,10 +7,7 @@ find_package (Threads)
 set(SOURCE_FILES
         graph.c
         graph.h
-        heap.c
-        heap.h
-        uf.c
-        uf.h main.c)
+        main.c)
 set(CMAKE_CXX_FLAGS " -g")
 
 add_executable(infect ${SOURCE_FILES})
