@@ -81,14 +81,16 @@ void stable_infect(unsigned int K)
         int max_mean_label = 0x12121;
 
         n_seed = i + 1;
-        fprintf( info, "#seed: %d\n", n_seed );
+        fprintf( info, "  #seed: %d\n", n_seed );
         memset(Ninfected_mean, 0, (V + 1) * sizeof *Ninfected_mean);
+        fprintf( info , "new seed : ") ;
         for (new_seed_label = 1; new_seed_label <= V; ++new_seed_label)
         {
             if (!seeds[new_seed_label])
             {
                 seed_vertices[i] = new_seed_label;
                 fprintf(info, "%d ", new_seed_label);
+				fflush(info);
                 int new_mean = multithread_infect("/dev/null");
                 Ninfected_mean[new_seed_label] = new_mean;
                 if (max_mean < new_mean)
@@ -99,20 +101,21 @@ void stable_infect(unsigned int K)
             }
 
         }
-        if (max_mean - mean > G->V / 500 )
+        fputc('\n', info) ;
+        if (max_mean - mean > ( G->V / 500 > 1 ? G->V / 500 : 1) )
         {
             seed_vertices[i] = max_mean_label;
             seeds[max_mean_label] = 1;
             mean = max_mean;
-            fprintf(info, "new seed: %d, mean : %d \n ",
+            fprintf(info, "Selected new seed: %d, mean : %d \n",
                     max_mean_label, max_mean);
         } else
         {
-            fprintf(info, "No improvement !!!! \n");
+            fprintf(info, "No improvement !!!! \n ------------------- \n");
             print_seeds(info, seed_vertices, n_seed, 20);
             multithread_infect("/dev/null");
             print_distribution(info, Ninfected_ptr, NUM_THREADS,
-                               G->V, G->V / 500 );
+                               G->V, ( G->V / 500 > 1 ? G->V / 500 : 1) );
             break;
         }
     }
