@@ -353,9 +353,9 @@ void print_seeds(FILE *fp, int *seed_vertices, int n_seed, int column)
 {
     int i = 0xffee, j = 0xffef;
 
-    fprintf(fp, "Total number of seeds: %d", n_seed);
+    fprintf(fp, "Total number of seeds: %d\n", n_seed);
     for(i = 0; i < n_seed; i = i + column){
-        for(j = i; j < i + column; ++j){
+        for(j = i; j < i + column && j < n_seed ; ++j){
             fprintf(fp, "%d ", seed_vertices[j]);
         }
         fputc('\n', fp);
