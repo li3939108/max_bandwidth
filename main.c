@@ -131,7 +131,7 @@ void *perform_work(void *argument)
     /*
      * Record whether a vertex is infected
      */
-    char infected[G->V];
+    char infected[G->V + 5];
     memset(infected, 0, G->V * sizeof *infected);
     unsigned long seed_int = (unsigned long) (1 + passed_in_value);
 #ifdef __CYGWIN__
