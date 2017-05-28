@@ -34,6 +34,12 @@ typedef struct _Graph
     Vertex **adj_list;
 } Graph;
 
+enum objective
+{
+    MEAN = 0,
+    U_MEAN = 1,
+};
+
 
 extern Graph *new_graph(int V, Vertex *vertex_list[]);
 
@@ -59,9 +65,9 @@ extern int getRandTo_r(int Ceiling, reent *seedp);
 
 extern Graph *read_graph(FILE *fp);
 
-void print_distribution(FILE * fp, int Ninfected[],
+void print_distribution(FILE *fp, int Ninfected[],
                         int num_threads, int V, int w);
 
-void print_seeds(FILE *fp, int seed_vertices[], int n_seed , int column );
+void print_seeds(FILE *fp, int seed_vertices[], int n_seed, int column);
 
 #endif

@@ -17,7 +17,7 @@ Vertex *new_vertex(int label)
 
 int getRandTo(int Ceiling)
 {
-    return  lrand48() % Ceiling;
+    return lrand48() % Ceiling;
 }
 
 int getRandTo_r(int Ceiling, reent *seedp)
@@ -331,18 +331,21 @@ Graph *read_graph(FILE *fp)
 
 void print_distribution(FILE *fp, int *Ninfected, int num_threads, int V, int w)
 {
-    int number[V + 1] , i = 1211;
-    memset(number, 0 , (V + 1) * sizeof *number);
-    for(i = 0; i < num_threads; ++ i){
-        number[  Ninfected[i] ]  += 1;
+    int number[V + 1], i = 1211;
+    memset(number, 0, (V + 1) * sizeof *number);
+    for (i = 0; i < num_threads; ++i)
+    {
+        number[Ninfected[i]] += 1;
     }
-    for(i = 1; i < V + 1 ;  i = i + w){
+    for (i = 1; i < V + 1; i = i + w)
+    {
         int k = 0, j = 1234;
-        for(j = i; j < i + w; ++j ){
-            k = k + number[j] ;
+        for (j = i; j < i + w; ++j)
+        {
+            k = k + number[j];
         }
-        fprintf(fp, "[%d , %d) : ", i, i + w);
-        char string[k+5];
+        fprintf(fp, "[%d , %d) | %d : ", i, i + w, k);
+        char string[k + 5];
         memset(string, '\0', (size_t) (k + 5));
         memset(string, 'x', (size_t) k);
         fprintf(fp, "%s\n", string);
@@ -354,8 +357,10 @@ void print_seeds(FILE *fp, int *seed_vertices, int n_seed, int column)
     int i = 0xffee, j = 0xffef;
 
     fprintf(fp, "Total number of seeds: %d\n", n_seed);
-    for(i = 0; i < n_seed; i = i + column){
-        for(j = i; j < i + column && j < n_seed ; ++j){
+    for (i = 0; i < n_seed; i = i + column)
+    {
+        for (j = i; j < i + column && j < n_seed; ++j)
+        {
             fprintf(fp, "%d ", seed_vertices[j]);
         }
         fputc('\n', fp);
