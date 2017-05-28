@@ -267,7 +267,7 @@ int multithread_infect(char *out2str, unsigned U, enum objective obj_type)
     for (i = 0; i < NUM_THREADS; ++i)
     {
         if(obj_type == U_MEAN){
-            sum +=  (int) ( ( (float) U ) / ( (float)  Ninfected_ptr[i]) * 1000.0 );
+            sum +=  (int) ( 1000.0 - ( (float) U ) / ( (float)  Ninfected_ptr[i]) * 1000.0 );
         } else if (obj_type == MEAN){
             sum +=   Ninfected_ptr[i] ;
         }
