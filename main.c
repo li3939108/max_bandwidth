@@ -13,7 +13,7 @@
 #include <elf.h>
 
 //#define WITH_INFECTED_COUNT
-#define NUM_THREADS     5000
+#define NUM_THREADS     1000
 #define SEED            8
 #define N_SEED          1
 
@@ -69,7 +69,7 @@ void stable_infect(unsigned int K, unsigned int U, enum objective obj_type)
     FILE *info = stdout;
     unsigned int V = (unsigned int) G->V, initial_number_of_seed = 0, i = 0x323;
     float Ninfected_mean[V + 1];
-    float obj_value = 0-99999999999999999.9999;
+    float obj_value = (float) (0 - 99999999999999999.9999);
     char seeds[V + 1];
 
     K = K < (V + 1) ? K : (V + 1);
@@ -82,7 +82,7 @@ void stable_infect(unsigned int K, unsigned int U, enum objective obj_type)
     for (i = initial_number_of_seed; i < K; ++i)
     {
         int new_seed_label;
-        float max_ =0;
+        float max_ = (float) -99999999999999.999;
         int max_label = 0x12121;
 
         n_seed = i + 1;
@@ -111,7 +111,7 @@ void stable_infect(unsigned int K, unsigned int U, enum objective obj_type)
         if(obj_type == MEAN){ 
             th = (G->V / 500 > 1 ? G->V / 500 : 1) ;
         } else if (obj_type == U_MEAN ) {
-            th = 1.0 ;
+            th = 0.00001 ;
         }
 
         if (max_ - obj_value > th )
@@ -121,6 +121,11 @@ void stable_infect(unsigned int K, unsigned int U, enum objective obj_type)
             obj_value = max_;
             fprintf(info, "Selected new seed: %d, obj_value : %f \n",
                     max_label, max_);
+
+            print_seeds(info, seed_vertices, n_seed, 20);
+            multithread_infect("/dev/null", 0, MEAN);
+            print_distribution(info, Ninfected_ptr, NUM_THREADS,
+                               G->V, (G->V / 500 > 1 ? G->V / 500 : 1));
         } else
         {
             fprintf(info, "No improvement !!!! \n ------------------- \n");
@@ -128,7 +133,7 @@ void stable_infect(unsigned int K, unsigned int U, enum objective obj_type)
              * Print out the infecting result with selected initial seeds
              */
             print_seeds(info, seed_vertices, n_seed, 20);
-            multithread_infect("/dev/null", U, obj_type);
+            multithread_infect("/dev/null", 0, MEAN);
             print_distribution(info, Ninfected_ptr, NUM_THREADS,
                                G->V, (G->V / 500 > 1 ? G->V / 500 : 1));
             break;
