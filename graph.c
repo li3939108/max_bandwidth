@@ -344,7 +344,7 @@ void print_distribution(FILE *fp, int *Ninfected, int num_threads, int V, int w)
         {
             k = k + number[j];
         }
-        fprintf(fp, "[%d , %d) : ", i, i + w);
+        fprintf(fp, "[%d , %d) | %d : ", i, i + w, k);
         char string[k + 5];
         memset(string, '\0', (size_t) (k + 5));
         memset(string, 'x', (size_t) k);

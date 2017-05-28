@@ -230,7 +230,7 @@ int main(int argc, char *argv[])
     seed_vertices[0] = SEED;
     seed_vertices[1] = SEED + 1002;
     //multithread_infect(out2str);
-    stable_infect(INT_MAX, 0, result);
+    stable_infect(INT_MAX, 0, 0);
 
     fclose(out_graph);
 
