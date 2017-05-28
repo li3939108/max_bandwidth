@@ -24,7 +24,7 @@ int n_seed = N_SEED;
 int Ninfected_ptr[NUM_THREADS];
 FILE *out2;
 
-int multithread_infect(char *out2str, unsigned U, enum objective obj_type);
+float multithread_infect(char *out2str, unsigned U, enum objective obj_type);
 
 void infect_dfs(Graph *G, Vertex *v, char *infected,
                 reent *seedp, int *Ninfected_ptr)
@@ -67,8 +67,8 @@ void stable_infect(unsigned int K, unsigned int U, enum objective obj_type)
 
     FILE *info = stdout;
     unsigned int V = (unsigned int) G->V, initial_number_of_seed = 0, i = 0x323;
-    int Ninfected_mean[V + 1];
-    int mean = 0;
+    float Ninfected_mean[V + 1];
+    float obj_value = 0;
     char seeds[V + 1];
 
     K = K < (V + 1) ? K : (V + 1);
@@ -81,7 +81,7 @@ void stable_infect(unsigned int K, unsigned int U, enum objective obj_type)
     for (i = initial_number_of_seed; i < K; ++i)
     {
         int new_seed_label;
-        int max_ = 0;
+        float max_ = 0;
         int max_label = 0x12121;
 
         n_seed = i + 1;
@@ -93,9 +93,9 @@ void stable_infect(unsigned int K, unsigned int U, enum objective obj_type)
             if (!seeds[new_seed_label])
             {
                 seed_vertices[i] = new_seed_label;
-                int new_ = multithread_infect("/dev/null", U, obj_type);
+                float new_ = multithread_infect("/dev/null", U, obj_type);
                 Ninfected_mean[new_seed_label] = new_;
-                fprintf(info, "%d:%d ", new_seed_label, new_);
+                fprintf(info, "%d:%f ", new_seed_label, new_);
                 fflush(info);
                 if (max_ < new_)
                 {
@@ -106,12 +106,12 @@ void stable_infect(unsigned int K, unsigned int U, enum objective obj_type)
 
         }
         fputc('\n', info);
-        if (max_ - mean > (G->V / 500 > 1 ? G->V / 500 : 1))
+        if (max_ - obj_value > (G->V / 500 > 1 ? G->V / 500 : 1))
         {
             seed_vertices[i] = max_label;
             seeds[max_label] = 1;
-            mean = max_;
-            fprintf(info, "Selected new seed: %d, obj_value : %d \n",
+            obj_value = max_;
+            fprintf(info, "Selected new seed: %d, obj_value : %f \n",
                     max_label, max_);
         } else
         {
@@ -230,7 +230,7 @@ int main(int argc, char *argv[])
 
 }
 
-int multithread_infect(char *out2str, unsigned U, enum objective obj_type)
+float multithread_infect(char *out2str, unsigned U, enum objective obj_type)
 {
     pthread_t threads[NUM_THREADS];
     int thread_args[NUM_THREADS];
@@ -272,8 +272,8 @@ int multithread_infect(char *out2str, unsigned U, enum objective obj_type)
             sum +=   Ninfected_ptr[i] ;
         }
     }
-    float mean = ((float) sum) / ((float) NUM_THREADS);
-    fprintf(out2, "sum: %f\nmean : %d \n ", sum, mean);
+    float mean = sum / ((float) NUM_THREADS);
+    fprintf(out2, "sum: %f\nmean : %f \n ", sum, mean);
     printf("\nsum: %f\nmean : %f \n ", sum, mean);
     //print_distribution(stdout, Ninfected_ptr, NUM_THREADS, G->V, 25);
     fclose(out2);
