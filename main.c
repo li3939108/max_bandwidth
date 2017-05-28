@@ -120,7 +120,7 @@ void stable_infect(unsigned int K, unsigned int U, enum objective obj_type)
              * Print out the infecting result with selected initial seeds
              */
             print_seeds(info, seed_vertices, n_seed, 20);
-            multithread_infect("/dev/null", U, MEAN);
+            multithread_infect("/dev/null", U, obj_type);
             print_distribution(info, Ninfected_ptr, NUM_THREADS,
                                G->V, (G->V / 500 > 1 ? G->V / 500 : 1));
             break;
