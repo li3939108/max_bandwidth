@@ -93,7 +93,7 @@ void stable_infect(unsigned int K, unsigned int U, enum objective obj_type)
             if (!seeds[new_seed_label])
             {
                 seed_vertices[i] = new_seed_label;
-                int new_ = multithread_infect("/dev/null", 0, MEAN);
+                int new_ = multithread_infect("/dev/null", U, obj_type);
                 Ninfected_mean[new_seed_label] = new_;
                 fprintf(info, "%d:%d ", new_seed_label, new_);
                 fflush(info);
@@ -222,7 +222,7 @@ int main(int argc, char *argv[])
     seed_vertices[0] = SEED;
     seed_vertices[1] = SEED + 1002;
     //multithread_infect(out2str);
-    stable_infect(INT_MAX, (unsigned int) (G->V * 3 / 5), MEAN);
+    stable_infect(INT_MAX, (unsigned int) (G->V * 3 / 5), U_MEAN);
 
     fclose(out_graph);
 
@@ -263,18 +263,18 @@ int multithread_infect(char *out2str, unsigned U, enum objective obj_type)
     /*
      * To calculate the MEAN
      */
-    int32_t sum = 0;
+    float sum = 0;
     for (i = 0; i < NUM_THREADS; ++i)
     {
         if(obj_type == U_MEAN){
-            sum +=  (int) ( 1000.0 - ( (float) U ) / ( (float)  Ninfected_ptr[i]) * 1000.0 );
+            sum +=   1.0 - (  U ) / (  0.0 + Ninfected_ptr[i]);
         } else if (obj_type == MEAN){
             sum +=   Ninfected_ptr[i] ;
         }
     }
     float mean = ((float) sum) / ((float) NUM_THREADS);
     fprintf(out2, "sum: %f\nmean : %d \n ", sum, mean);
-//    printf("sum: %ld\nmean : %d \n ", sum, mean);
+    printf("\nsum: %f\nmean : %f \n ", sum, mean);
     //print_distribution(stdout, Ninfected_ptr, NUM_THREADS, G->V, 25);
     fclose(out2);
     return mean;
