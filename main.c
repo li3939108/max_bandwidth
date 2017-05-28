@@ -93,10 +93,10 @@ void stable_infect(unsigned int K, unsigned int U, enum objective obj_type)
             if (!seeds[new_seed_label])
             {
                 seed_vertices[i] = new_seed_label;
-                fprintf(info, "%d ", new_seed_label);
-                fflush(info);
                 int new_ = multithread_infect("/dev/null", 0, MEAN);
                 Ninfected_mean[new_seed_label] = new_;
+                fprintf(info, "%d:%d ", new_seed_label, new_);
+                fflush(info);
                 if (max_ < new_)
                 {
                     max_ = new_;
@@ -111,7 +111,7 @@ void stable_infect(unsigned int K, unsigned int U, enum objective obj_type)
             seed_vertices[i] = max_label;
             seeds[max_label] = 1;
             mean = max_;
-            fprintf(info, "Selected new seed: %d, mean : %d \n",
+            fprintf(info, "Selected new seed: %d, obj_value : %d \n",
                     max_label, max_);
         } else
         {
