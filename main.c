@@ -10,7 +10,6 @@
 #include <memory.h>
 #include <limits.h>
 #include <elf.h>
-#include <sys/config.h>
 
 //#define WITH_INFECTED_COUNT
 #define NUM_THREADS     5000
