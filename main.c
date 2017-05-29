@@ -14,7 +14,7 @@
 
 int main(int argc, char *argv[])
 {
-    int D = 0, U = G->V * 4 / 5;
+    int D = 0, U = 1;
     FILE *out_graph;
     struct timeval tv;
     double st, et;
