@@ -14,7 +14,7 @@
 
 int main(int argc, char *argv[])
 {
-    int j, *result, s_label, t_label, D;
+    int D = 0;
     FILE *out_graph;
     struct timeval tv;
     double st, et;
