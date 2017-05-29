@@ -7,6 +7,7 @@
 
 #define INFECT_INFECT_H
 
+
 #include "graph.h"
 #include "parameters.h"
 

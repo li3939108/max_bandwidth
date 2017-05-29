@@ -64,7 +64,7 @@ void stable_infect(unsigned int K, unsigned int U, enum objective obj_type)
     FILE *info = stdout;
     unsigned int V = (unsigned int) G->V, initial_number_of_seed = 0, i = 0x323;
     float Ninfected_mean[V + 1];
-    float obj_value = (float) (0 - 99999999999999999.9999);
+    float obj_value = (float) (0 - LARGE_FLT);
     char seeds[V + 1];
 
     K = K < (V + 1) ? K : (V + 1);
@@ -77,7 +77,7 @@ void stable_infect(unsigned int K, unsigned int U, enum objective obj_type)
     for (i = initial_number_of_seed; i < K; ++i)
     {
         int new_seed_label;
-        float max_ = (float) -99999999999999.999;
+        float max_ = (float) -LARGE_FLT;
         int max_label = 0x12121;
 
         n_seed = i + 1;
