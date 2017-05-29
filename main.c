@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     struct timeval tv;
     double st, et;
     char out2str[200];
-    enum objective objtype;
+    enum objective objtype = MEAN;
 
     srand((unsigned int) time(NULL));
 
