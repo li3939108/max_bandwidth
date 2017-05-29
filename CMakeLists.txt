@@ -7,9 +7,9 @@ find_package (Threads)
 set(SOURCE_FILES
         graph.c
         graph.h
-        main.c)
+        main.c infect.c infect.h parameters.h)
 set(CMAKE_CXX_FLAGS " -g")
 
-add_executable(infect ${SOURCE_FILES})
+add_executable(infect ${SOURCE_FILES} infect.c infect.h parameters.h)
 
 target_link_libraries (infect ${CMAKE_THREAD_LIBS_INIT})

@@ -3,7 +3,6 @@
 ***************************************/
 #include <string.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include "graph.h"
 
 Vertex *new_vertex(int label)
