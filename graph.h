@@ -16,8 +16,7 @@ typedef struct drand48_data reent;
 
 #define LIST_SIZE  3
 
-typedef struct _Vertex
-{
+typedef struct _Vertex {
     int degree;
     int label;
     int rank;//for use with Make-Set-Find
@@ -25,20 +24,13 @@ typedef struct _Vertex
     struct _Vertex *parent;//for use with Make-Set-Find
 } Vertex;
 
-typedef struct _Graph
-{
+typedef struct _Graph {
     int V;
     int E;
     int (*edge_list)[2]; // [label,weight]
     int (*edge_pair)[2]; //[v1, v2]
     Vertex **adj_list;
 } Graph;
-
-enum objective
-{
-    MEAN = 0,
-    U_MEAN = 1,
-};
 
 
 extern Graph *new_graph(int V, Vertex *vertex_list[]);
@@ -64,10 +56,5 @@ extern int getRandTo(int Ceiling);
 extern int getRandTo_r(int Ceiling, reent *seedp);
 
 extern Graph *read_graph(FILE *fp);
-
-void print_distribution(FILE *fp, int Ninfected[],
-                        int num_threads, int V, int w);
-
-void print_seeds(FILE *fp, int seed_vertices[], int n_seed, int column);
 
 #endif

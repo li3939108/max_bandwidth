@@ -12,8 +12,7 @@
 #include "infect.h"
 
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     int D = 0, U = 1;
     FILE *out_graph;
     struct timeval tv;
@@ -28,8 +27,7 @@ int main(int argc, char *argv[])
     st = (double) tv.tv_sec + (0.000001f * tv.tv_usec);
     gettimeofday(&tv, NULL);
     et = (double) tv.tv_sec + (0.000001f * tv.tv_usec);
-    if (argc == 4)
-    {
+    if (argc == 4) {
         FILE *fp = fopen(argv[1], "r");
         G = read_graph(fp);
 
@@ -40,8 +38,7 @@ int main(int argc, char *argv[])
         strcpy(out2str, "/dev/null");
 #endif
 
-    } else if (argc == 5)
-    {
+    } else if (argc == 5) {
 
         /*
          * Degree of each vertex
@@ -53,8 +50,7 @@ int main(int argc, char *argv[])
         int V = atoi(argv[1]);
         G = gen(D, V);
         strcpy(out2str, "infect.raw");
-    } else
-    {
+    } else {
         printf("less arguments\n$ maxbw n r\n");
         exit(EXIT_FAILURE);
     }
@@ -62,8 +58,7 @@ int main(int argc, char *argv[])
     /*
      * command line parameter 2
      */
-    switch (argv[2][0])
-    {
+    switch (argv[2][0]) {
         case 'M' :
         case 'm' :
             objtype = MEAN;
@@ -72,6 +67,9 @@ int main(int argc, char *argv[])
         case 'u' :
             objtype = U_MEAN;
             break;
+        case 'T':
+            objtype = T_MEAN ;
+            break ;
         default:
             objtype = MEAN;
             break;
@@ -81,8 +79,7 @@ int main(int argc, char *argv[])
      */
     U = atoi(argv[3]);
 
-    if ((out_graph = fopen("./graph.raw", "w")) == NULL)
-    {
+    if ((out_graph = fopen("./graph.raw", "w")) == NULL) {
         fprintf(stderr,
                 "cannot open file to output the graph, use stdout instead\n");
         out_graph = stdout;
