@@ -5,8 +5,7 @@
 #include <stdlib.h>
 #include "graph.h"
 
-Vertex *new_vertex(int label)
-{
+Vertex *new_vertex(int label) {
     Vertex *v = (Vertex *) malloc(sizeof(Vertex));
     v->degree = 0;
     v->label = label;
@@ -14,13 +13,11 @@ Vertex *new_vertex(int label)
     return v;
 }
 
-int getRandTo(int Ceiling)
-{
+int getRandTo(int Ceiling) {
     return lrand48() % Ceiling;
 }
 
-int getRandTo_r(int Ceiling, reent *seedp)
-{
+int getRandTo_r(int Ceiling, reent *seedp) {
     long int r = 1234;
 #ifdef __CYGWIN__
     r = rand_r(seedp);
@@ -32,13 +29,11 @@ int getRandTo_r(int Ceiling, reent *seedp)
 }
 
 
-double getRand(int precision)
-{
+double getRand(int precision) {
     return 1.0 / getRandTo(precision);
 }
 
-Graph *new_graph(int V, Vertex *vertex_list[])
-{
+Graph *new_graph(int V, Vertex *vertex_list[]) {
     int i = 0;
     Graph *G = (Graph *) malloc(sizeof(Graph));
     G->V = V;
@@ -46,8 +41,7 @@ Graph *new_graph(int V, Vertex *vertex_list[])
     G->adj_list = (Vertex **) calloc(V + 1, sizeof(Vertex *));
     G->edge_list = (int (*)[2]) calloc(1, sizeof *(G->edge_list));
     G->edge_pair = (int (*)[2]) calloc(1, sizeof *(G->edge_pair));
-    for (i = 0; i < G->V; i++)
-    {//Make the adjacency list sorted by the label
+    for (i = 0; i < G->V; i++) {//Make the adjacency list sorted by the label
         G->adj_list[vertex_list[i]->label] = vertex_list[i];
     }
     G->adj_list[0] = new_vertex(0);
@@ -56,47 +50,37 @@ Graph *new_graph(int V, Vertex *vertex_list[])
     return G;
 }
 
-void free_vertex(Vertex *v)
-{
-    if (v == NULL)
-    {
+void free_vertex(Vertex *v) {
+    if (v == NULL) {
         return;
     }
-    if (v->list != NULL)
-    {
+    if (v->list != NULL) {
         free(v->list);
     }
     free(v);
 }
 
-void free_graph(Graph *G)
-{
+void free_graph(Graph *G) {
     int i = 0;
-    if (G == NULL)
-    {
+    if (G == NULL) {
         return;
     }
-    if (G->adj_list != NULL)
-    {
-        for (i = 0; i <= G->V; i++)
-        {
+    if (G->adj_list != NULL) {
+        for (i = 0; i <= G->V; i++) {
             free_vertex(G->adj_list[i]);
         }
         free(G->adj_list);
     }
-    if (G->edge_list != NULL)
-    {
+    if (G->edge_list != NULL) {
         free(G->edge_list);
     }
-    if (G->edge_pair != NULL)
-    {
+    if (G->edge_pair != NULL) {
         free(G->edge_pair);
     }
     free(G);
 }
 
-void add_adjacency_vertex(Vertex *v, int label, int weight)
-{
+void add_adjacency_vertex(Vertex *v, int label, int weight) {
     v->degree += 1;
     v->list = (int (*)[LIST_SIZE]) realloc(v->list,
                                            v->degree * sizeof *(v->list));
@@ -106,30 +90,26 @@ void add_adjacency_vertex(Vertex *v, int label, int weight)
 
 
 void add_adjacency_vertex_with_direction(Vertex *v, int label, int weight,
-                                         int direction)
-{
+                                         int direction) {
     add_adjacency_vertex(v, label, weight);
     v->list[v->degree - 1][2] = direction;
 }
 
-void pv(Vertex *v, FILE *fp)
-{
+void pv(Vertex *v, FILE *fp) {
     int i;
     fprintf(fp, "%d -> ", v->label);
-    for (i = 0; i < v->degree; i++)
-    {
+    for (i = 0; i < v->degree; i++) {
         fprintf(fp, "[%d %d %d] ", v->list[i][0], v->list[i][1], v->list[i][2]);
     }
     fputc('\n', fp);
 }
 
-void pg(Graph *g, FILE *fp)
-{
+void pg(Graph *g, FILE *fp) {
     int i;
-    for (i = 1; i <= g->V; i++)
-    {
+    for (i = 1; i <= g->V; i++) {
         pv(g->adj_list[i], fp);
     }
+    fflush(fp);
 }
 
 /*
@@ -137,39 +117,32 @@ void pg(Graph *g, FILE *fp)
 	V is the total number of vertices
 	generate a random graph with V vertices, and every vertex has exact degree of D
 */
-Graph *gen(int D, int V)
-{
+Graph *gen(int D, int V) {
     Vertex
             *(*sets)[V] = (Vertex *(*)[V]) calloc(3, sizeof *sets),
             *v1 = NULL, *v2 = NULL;
     int dgr[3] = {-1, 0, 1}, len[3] = {0, 0, 0}, min_index, new_index, i;
-    if (D > V - 1)
-    {
+    if (D > V - 1) {
         perror("No such graph: total degree should be less than of equal to "
                        "2 x maximal number of edge");
         exit(EXIT_FAILURE);
     }
-    for (i = 0; i < V; i++)
-    {
+    for (i = 0; i < V; i++) {
         sets[1][i] = new_vertex(i + 1);
     }
     len[1] = V;
     min_index = 1;
-    while (len[0] < V - 1)
-    {
+    while (len[0] < V - 1) {
         int v = rand() % (V - len[0]), l, pl;
-        if (v / len[min_index] == 0)
-        {
+        if (v / len[min_index] == 0) {
             v1 = sets[min_index][v];
             memmove(sets[min_index] + v, sets[min_index] + v + 1,
                     (len[min_index] - v - 1) * sizeof(Vertex *));
             len[min_index] -= 1;//pop (v)
-            if (len[min_index] == 0)
-            {
+            if (len[min_index] == 0) {
                 min_index = !(min_index - 1) + 1;
             }
-        } else
-        {
+        } else {
             new_index = !(min_index - 1) + 1;
             v -= len[min_index];
             v1 = sets[new_index][v];
@@ -179,14 +152,11 @@ Graph *gen(int D, int V)
         }
         l = D - v1->degree;
         pl = 0;//Pop length
-        while (l > 0 && dgr[min_index] < D)
-        {
+        while (l > 0 && dgr[min_index] < D) {
             int untouched_len = len[min_index] - pl, weight;
             new_index = !(min_index - 1) + 1;
-            if (l < untouched_len)
-            {
-                for (i = 0; i < l; i++)
-                {
+            if (l < untouched_len) {
+                for (i = 0; i < l; i++) {
                     v = rand() % (len[min_index] - pl);
                     v2 = sets[min_index][v];
                     memmove(sets[min_index] + v, sets[min_index] + v + 1,
@@ -198,22 +168,18 @@ Graph *gen(int D, int V)
                                                         direction);
                     add_adjacency_vertex_with_direction(v1, v2->label, weight,
                                                         !direction);
-                    if (v2->degree == D)
-                    {
+                    if (v2->degree == D) {
                         sets[0][len[0]] = v2;
                         len[0] += 1;
-                    } else
-                    {
+                    } else {
                         sets[new_index][len[new_index]] = v2;
                         len[new_index] += 1;
                     }
                 }
                 dgr[new_index] = dgr[min_index] + 1;
                 l = 0;
-            } else
-            {
-                for (i = 0; i < untouched_len; i++)
-                {
+            } else {
+                for (i = 0; i < untouched_len; i++) {
                     v = rand() % (len[min_index] - pl);
                     v2 = sets[min_index][v];
                     memmove(sets[min_index] + v, sets[min_index] + v + 1,
@@ -225,12 +191,10 @@ Graph *gen(int D, int V)
                                                         direction);
                     add_adjacency_vertex_with_direction(v1, v2->label, weight,
                                                         !direction);
-                    if (v2->degree == D)
-                    {
+                    if (v2->degree == D) {
                         sets[0][len[0]] = v2;
                         len[0] += 1;
-                    } else
-                    {
+                    } else {
                         sets[new_index][len[new_index]] = v2;
                         len[new_index] += 1;
                     }
@@ -244,13 +208,11 @@ Graph *gen(int D, int V)
         sets[0][len[0]] = v1;
         len[0] += 1;
     }
-    if (len[0] == V)
-    {
+    if (len[0] == V) {
         Graph *G = new_graph(V, sets[0]);
         free(sets);
         return G;
-    } else
-    {
+    } else {
         Graph *G;
         perror("No such graph: Returned graph has a vertex with degree "
                        "less than min_index");
@@ -261,32 +223,23 @@ Graph *gen(int D, int V)
     }
 }
 
-void edges(Graph *G, FILE *output)
-{
+void edges(Graph *G, FILE *output) {
     int i, j;
-    if (G->E > 0)
-    {
-        if (output == NULL)
-        {
+    if (G->E > 0) {
+        if (output == NULL) {
             return;
-        } else
-        {
+        } else {
             fprintf(output, "%d  %d\n", G->V, G->E);
-            for (i = 1; i <= G->E; i++)
-            {
+            for (i = 1; i <= G->E; i++) {
                 fprintf(output, "%d %d\n", G->edge_pair[i][0],
                         G->edge_pair[i][1]);
             }
         }
-    } else
-    {
-        for (i = 1; i <= G->V; i++)
-        {
+    } else {
+        for (i = 1; i <= G->V; i++) {
             Vertex *v = G->adj_list[i];
-            for (j = 0; j < v->degree; j++)
-            {
-                if (v->label < v->list[j][0])
-                {
+            for (j = 0; j < v->degree; j++) {
+                if (v->label < v->list[j][0]) {
                     G->E += 1;
                     G->edge_list = (int (*)[2]) realloc(G->edge_list,
                                                         (G->E + 1) *
@@ -305,12 +258,10 @@ void edges(Graph *G, FILE *output)
     }
 }
 
-Graph *read_graph(FILE *fp)
-{
+Graph *read_graph(FILE *fp) {
     int number, count = 0;
     Vertex **vlist = NULL;
-    while (fscanf(fp, " %d ->", &number) > 0)
-    {
+    while (fscanf(fp, " %d ->", &number) > 0) {
         int label;
         int weight;
         int direction;
@@ -319,8 +270,7 @@ Graph *read_graph(FILE *fp)
         vlist = realloc(vlist, count * sizeof *vlist);
         Vertex *curVertex = new_vertex(number);
         vlist[count - 1] = curVertex;
-        while (fscanf(fp, " [%d %d %d]", &label, &weight, &direction) > 0)
-        {
+        while (fscanf(fp, " [%d %d %d]", &label, &weight, &direction) > 0) {
             add_adjacency_vertex_with_direction(curVertex, label,
                                                 weight, direction);
         }
@@ -328,43 +278,7 @@ Graph *read_graph(FILE *fp)
     return new_graph(count, vlist);
 }
 
-void print_distribution(FILE *fp, int *Ninfected, int num_threads, int V, int w)
-{
-    int number[V + 1], i = 1211;
-    memset(number, 0, (V + 1) * sizeof *number);
-    for (i = 0; i < num_threads; ++i)
-    {
-        number[Ninfected[i]] += 1;
-    }
-    for (i = 1; i < V + 1; i = i + w)
-    {
-        int k = 0, j = 1234;
-        for (j = i; j < i + w; ++j)
-        {
-            k = k + number[j];
-        }
-        fprintf(fp, "[%d , %d) | %d : ", i, i + w, k);
-        char string[k + 5];
-        memset(string, '\0', (size_t) (k + 5));
-        memset(string, 'x', (size_t) k);
-        fprintf(fp, "%s\n", string);
-    }
-}
 
-void print_seeds(FILE *fp, int *seed_vertices, int n_seed, int column)
-{
-    int i = 0xffee, j = 0xffef;
-
-    fprintf(fp, "Total number of seeds: %d\n", n_seed);
-    for (i = 0; i < n_seed; i = i + column)
-    {
-        for (j = i; j < i + column && j < n_seed; ++j)
-        {
-            fprintf(fp, "%d ", seed_vertices[j]);
-        }
-        fputc('\n', fp);
-    }
-}
 /*
  *uncomment this to see sample output
 int main(){
