@@ -14,7 +14,7 @@
 
 int main(int argc, char *argv[])
 {
-    int D = 0;
+    int D = 0, U = G->V * 4 / 5;
     FILE *out_graph;
     struct timeval tv;
     double st, et;
@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
     st = (double) tv.tv_sec + (0.000001f * tv.tv_usec);
     gettimeofday(&tv, NULL);
     et = (double) tv.tv_sec + (0.000001f * tv.tv_usec);
-    if (argc == 3)
+    if (argc == 4)
     {
         FILE *fp = fopen(argv[1], "r");
         G = read_graph(fp);
@@ -39,22 +39,8 @@ int main(int argc, char *argv[])
 #else
         strcpy(out2str, "/dev/null");
 #endif
-        switch (argv[2][0])
-        {
-            case 'M' :
-            case 'm' :
-                objtype = MEAN;
-                break;
-            case 'U' :
-            case 'u' :
-                objtype = U_MEAN;
-                break;
-            default:
-                objtype = MEAN;
-                break;
-        }
 
-    } else if (argc == 4)
+    } else if (argc == 5)
     {
 
         /*
@@ -72,6 +58,29 @@ int main(int argc, char *argv[])
         printf("less arguments\n$ maxbw n r\n");
         exit(EXIT_FAILURE);
     }
+
+    /*
+     * command line parameter 2
+     */
+    switch (argv[2][0])
+    {
+        case 'M' :
+        case 'm' :
+            objtype = MEAN;
+            break;
+        case 'U' :
+        case 'u' :
+            objtype = U_MEAN;
+            break;
+        default:
+            objtype = MEAN;
+            break;
+    }
+    /*
+     * command line parameter 3
+     */
+    U = atoi(argv[3]);
+
     if ((out_graph = fopen("./graph.raw", "w")) == NULL)
     {
         fprintf(stderr,
@@ -92,7 +101,7 @@ int main(int argc, char *argv[])
     seed_vertices[0] = DEFAULT_INIT_SEED;
     seed_vertices[1] = DEFAULT_INIT_SEED + 1002;
     //multithread_infect(out2str);
-    stable_infect(INT_MAX, (unsigned int) (G->V * 4 / 5), objtype);
+    stable_infect(INT_MAX, (unsigned int) U, objtype);
 
     fclose(out_graph);
 
