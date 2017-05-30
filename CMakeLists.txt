@@ -13,3 +13,5 @@ set(CMAKE_CXX_FLAGS " -g")
 add_executable(infect ${SOURCE_FILES} infect.c infect.h parameters.h)
 
 target_link_libraries (infect ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries (infect m)
+
