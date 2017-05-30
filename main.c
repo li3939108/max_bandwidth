@@ -70,6 +70,10 @@ int main(int argc, char *argv[]) {
         case 'T':
             objtype = T_MEAN ;
             break ;
+        case 'J':
+        case 'j':
+            objtype = UM ;
+            break;
         default:
             objtype = MEAN;
             break;

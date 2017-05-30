@@ -29,6 +29,7 @@ enum objective {
     MEAN = 0,
     U_MEAN = 1,
     T_MEAN ,
+    UM,
 };
 
 void stable_infect(unsigned int K, unsigned int U, enum objective obj_type);

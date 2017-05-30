@@ -178,7 +178,7 @@ float multithread_infect(char *out2str, unsigned U, enum objective obj_type) {
     /*
      * To calculate the MEAN
      */
-    float sum = 0.0;
+    float sum = 0.0,sum0=0.0, sum1 =0.0;
     for (i = 0; i < NUM_THREADS; ++i) {
         if (obj_type == U_MEAN) {
             sum += 1.0 - (U + 0.0) / (0.0 + Ninfected_ptr[i]);
@@ -186,6 +186,9 @@ float multithread_infect(char *out2str, unsigned U, enum objective obj_type) {
             sum += Ninfected_ptr[i];
         } else if (obj_type == T_MEAN){
             sum += (G->V - U + 0.0 ) / (G->V - Ninfected_ptr[i] + 0.0);
+        } else if (obj_type == UM){
+            sum += A * (Ninfected_ptr[i] + 0.0)/(U + 0.0 ) +
+                    ( 1 - A ) * ( 1.0 - (U + 0.0) / (0.0 + Ninfected_ptr[i]) );
         }
     }
     float mean = sum / ((float) NUM_THREADS);

@@ -9,5 +9,6 @@
 #define DEFAULT_INIT_SEED    8
 #define NUM_THREADS          1000
 #define DEFAULT_NUM_SEEDS    1
+#define A                    0.5
 
 #endif //INFECT_PARAMETERS_H
