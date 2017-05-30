@@ -6,6 +6,7 @@
 #include <string.h>
 #include <assert.h>
 #include "graph.h"
+#include <math.h>
 
 #include "parameters.h"
 
@@ -189,6 +190,8 @@ float multithread_infect(char *out2str, unsigned U, enum objective obj_type) {
         } else if (obj_type == UM){
             sum += A * (Ninfected_ptr[i] + 0.0)/(U + 0.0 ) +
                     ( 1 - A ) * ( 1.0 - (U + 0.0) / (0.0 + Ninfected_ptr[i]) );
+        } else if(obj_type == LN){
+            sum += -log ( ( G->V - Ninfected_ptr[i] + 0.0) / (G->V - U + 0.0) );
         }
     }
     float mean = sum / ((float) NUM_THREADS);
