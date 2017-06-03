@@ -132,9 +132,9 @@ void *perform_work(void *argument) {
      */
     char infected[G->V + 5];
     memset(infected, 0, (G->V + 5) * sizeof *infected);
-    unsigned long seed_int = (unsigned long) (1 + passed_in_value);
+    unsigned long seed_int = (unsigned long)( ( 1 + passed_in_value + time(NULL) ) % 888 );
 #ifdef __CYGWIN__
-    reent seed = (reent) (seed_int * 100 + time(NULL) % 99888);
+    reent seed = (reent) seed_int;
 #else
     struct drand48_data seed;
     srand48_r(seed_int, &seed);
@@ -189,9 +189,14 @@ float multithread_infect(char *out2str, unsigned U, enum objective obj_type) {
             sum += (G->V - U + 0.0 ) / (G->V - Ninfected_ptr[i] + 0.0);
         } else if (obj_type == UM){
             sum += A * (Ninfected_ptr[i] + 0.0)/(U + 0.0 ) +
-                    ( 1 - A ) * ( 1.0 - (U + 0.0) / (0.0 + Ninfected_ptr[i]) );
+                   ( 1 - A ) * ( 1.0 - (U + 0.0) / (0.0 + Ninfected_ptr[i]) );
         } else if(obj_type == LN){
             sum += -log ( ( G->V - Ninfected_ptr[i] + 0.0) / (G->V - U + 0.0) );
+        } else if(obj_type == TM){
+            sum += A *
+                   (Ninfected_ptr[i] + 0.0)/(U + 0.0 ) +
+                   ( 1 - A ) *
+                   (G->V - U + 0.0 ) / (G->V - Ninfected_ptr[i] + 0.0);
         }
     }
     float mean = sum / ((float) NUM_THREADS);

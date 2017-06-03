@@ -29,8 +29,9 @@ enum objective {
     MEAN = 0,
     U_MEAN = 1,
     T_MEAN ,
-    UM,
-    LN,
+    UM, //U_MEAN and MEAN
+    LN, //Log
+    TM, //T_MEAN and MEAN
 };
 
 void stable_infect(unsigned int K, unsigned int U, enum objective obj_type);
