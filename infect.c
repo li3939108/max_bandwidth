@@ -94,7 +94,7 @@ void stable_infect(unsigned int K, unsigned int U, enum objective obj_type) {
         float th = 0.0;
         if (obj_type == MEAN) {
             th = (G->V / 500 > 1 ? G->V / 500 : 1);
-        } else  {
+        } else {
             th = 0.00001;
         }
         int w = G->V / (NUM_THREADS / 10);
@@ -111,8 +111,17 @@ void stable_infect(unsigned int K, unsigned int U, enum objective obj_type) {
              */
             fprintf(info, "-----------\nThe mean of infected nodes : %f\n",
                     multithread_infect("/dev/null", 0, MEAN));
-            print_distribution(info, Ninfected_ptr, NUM_THREADS,
-                               G->V, w > 1 ? w : 1);
+            print_pdf(info, Ninfected_ptr, NUM_THREADS,
+                      G->V, w > 1 ? w : 1);
+            fprintf(info, "-------------\n");
+            char cdf_file [20] ;
+            cdf_file[0] = obj_type + '0' ;
+            cdf_file[1] = '.' ;
+            sprintf(cdf_file + 2, "%d.\0", U);
+            sprintf(cdf_file + strlen(cdf_file), "%d\0", n_seed);
+            FILE *new_info = fopen(cdf_file, "w");
+            print_cdf(new_info, Ninfected_ptr, NUM_THREADS, G->V, w > 1 ? w : 1);
+            fclose(new_info);
         } else {
             fprintf(info, "No improvement !!!! \n "
                     "------------------- \n Done !!!!");
@@ -132,7 +141,8 @@ void *perform_work(void *argument) {
      */
     char infected[G->V + 5];
     memset(infected, 0, (G->V + 5) * sizeof *infected);
-    unsigned long seed_int = (unsigned long)( ( 1 + passed_in_value + time(NULL) ) % 888 );
+    unsigned long seed_int = (unsigned long) (
+            (1 + passed_in_value + time(NULL)) % 888);
 #ifdef __CYGWIN__
     reent seed = (reent) seed_int;
 #else
@@ -179,36 +189,58 @@ float multithread_infect(char *out2str, unsigned U, enum objective obj_type) {
     /*
      * To calculate the MEAN
      */
-    float sum = 0.0,sum0=0.0, sum1 =0.0;
+    float sum = 0.0, sum0 = 0.0, sum1 = 0.0;
     for (i = 0; i < NUM_THREADS; ++i) {
         if (obj_type == U_MEAN) {
             sum += 1.0 - (U + 0.0) / (0.0 + Ninfected_ptr[i]);
         } else if (obj_type == MEAN) {
             sum += Ninfected_ptr[i];
-        } else if (obj_type == T_MEAN){
-            sum += (G->V - U + 0.0 ) / (G->V - Ninfected_ptr[i] + 0.0);
-        } else if (obj_type == UM){
-            sum += A * (Ninfected_ptr[i] + 0.0)/(U + 0.0 ) +
-                   ( 1 - A ) * ( 1.0 - (U + 0.0) / (0.0 + Ninfected_ptr[i]) );
-        } else if(obj_type == LN){
-            sum += -log ( ( G->V - Ninfected_ptr[i] + 0.0) / (G->V - U + 0.0) );
-        } else if(obj_type == TM){
+        } else if (obj_type == T_MEAN) {
+            sum += (G->V - U + 0.0) / (G->V - Ninfected_ptr[i] + 0.0);
+        } else if (obj_type == UM) {
+            sum += A * (Ninfected_ptr[i] + 0.0) / (U + 0.0) +
+                   (1 - A) * (1.0 - (U + 0.0) / (0.0 + Ninfected_ptr[i]));
+        } else if (obj_type == LN) {
+            sum += -log((G->V - Ninfected_ptr[i] + 0.0) / (G->V - U + 0.0));
+        } else if (obj_type == TM) {
             sum += A *
-                   (Ninfected_ptr[i] + 0.0)/(U + 0.0 ) +
-                   ( 1 - A ) *
-                   (G->V - U + 0.0 ) / (G->V - Ninfected_ptr[i] + 0.0);
+                   (Ninfected_ptr[i] + 0.0) / (U + 0.0) +
+                   (1 - A) *
+                   (G->V - U + 0.0) / (G->V - Ninfected_ptr[i] + 0.0);
+        } else if (obj_type == EX){
+            sum += exp(Ninfected_ptr[i]/ (0.0 + G->V)*10);
+        } else if( obj_type == VAR){
+            sum += A * Ninfected_ptr[i] + (1 - A)*abs(Ninfected_ptr[i] - U);
         }
     }
     float mean = sum / ((float) NUM_THREADS);
     fprintf(out2, "sum: %f\nmean : %f \n ", sum, mean);
 //    printf("\nsum: %f\nmean : %f \n ", sum, mean);
-    //print_distribution(stdout, Ninfected_ptr, NUM_THREADS, G->V, 25);
+    //print_pdf(stdout, Ninfected_ptr, NUM_THREADS, G->V, 25);
     fclose(out2);
     return mean;
 }
 
+
+void print_cdf(FILE *fp, int *Ninfected, int num_threads, int V, int w) {
+    int density[V + 1], cumulative[V + 1], i = 1211;
+    memset(density, 0, (V + 1) * sizeof *density);
+    memset(cumulative, 0, (V + 1) * sizeof *cumulative);
+    for (i = 0; i < num_threads; ++i) {
+        density[Ninfected[i]] += 1;
+    }
+    for (i = 1; i < V + 1; ++i) {
+        cumulative[i] = cumulative[i - 1] + density[i];
+    }
+
+    for (i = 1; i < V + 1; i = i + i) {
+        fprintf(fp, "%d %d\n", i, cumulative[i]);
+    }
+    fputc('\n', fp);
+}
+
 void
-print_distribution(FILE *fp, int *Ninfected, int num_threads, int V, int w) {
+print_pdf(FILE *fp, int *Ninfected, int num_threads, int V, int w) {
     int number[V + 1], i = 1211;
     memset(number, 0, (V + 1) * sizeof *number);
     for (i = 0; i < num_threads; ++i) {

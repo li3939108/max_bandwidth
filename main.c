@@ -82,6 +82,14 @@ int main(int argc, char *argv[]) {
         case 'k':
             objtype = TM;
             break;
+        case 'E':
+        case 'e':
+            objtype = EX;
+            break;
+        case 'V':
+        case 'v':
+            objtype = VAR;
+            break;
         default:
             objtype = MEAN;
             break;
