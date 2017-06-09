@@ -90,6 +90,10 @@ int main(int argc, char *argv[]) {
         case 'v':
             objtype = VAR;
             break;
+        case 'R':
+        case 'r':
+            objtype = P ;
+            break;
         default:
             objtype = MEAN;
             break;

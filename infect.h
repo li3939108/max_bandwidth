@@ -34,6 +34,7 @@ enum objective {
     TM, //T_MEAN and MEAN
     EX, // Exponential
     VAR,
+    P,//Random
 };
 
 void stable_infect(unsigned int K, unsigned int U, enum objective obj_type);

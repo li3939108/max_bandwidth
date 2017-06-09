@@ -69,7 +69,7 @@ void stable_infect(unsigned int K, unsigned int U, enum objective obj_type) {
      */
     for (i = initial_number_of_seed; i < K; ++i) {
         int new_seed_label;
-        float max_ = (float) -LARGE_FLT;
+        float max_ = (float) -LARGE_FLT, max_2 = (float) - LARGE_FLT ;
         int max_label = 0x12121;
 
         n_seed = i + 1;
@@ -81,21 +81,32 @@ void stable_infect(unsigned int K, unsigned int U, enum objective obj_type) {
                 seed_vertices[i] = new_seed_label;
                 float new_ = multithread_infect("/dev/null", U, obj_type);
                 Ninfected_mean[new_seed_label] = new_;
+                int j = 0x1234, s = 0;
+                for(j = 0; j < NUM_THREADS ; ++j){
+                    s += (Ninfected_ptr[j] > U ? 1 : 0);
+                }
                 fprintf(info, "%d:%f ", new_seed_label, new_);
                 fflush(info);
-                if (max_ < new_) {
-                    max_ = new_;
-                    max_label = new_seed_label;
+                if(obj_type == P && s > 0){
+                    if(max_2 < s ){
+                        max_2 = s;
+                        max_label = new_seed_label ;
+                    }
+                } else {
+                    if (max_ < new_) {
+                        max_ = new_;
+                        max_label = new_seed_label;
+                    }
                 }
             }
 
         }
         fputc('\n', info);
-        float th = 0.0;
+        double th = 0.0;
         if (obj_type == MEAN) {
             th = (G->V / 500 > 1 ? G->V / 500 : 1);
-        } else {
-            th = 0.00001;
+        }else{
+            th =  -LARGE_FLT;
         }
         int w = G->V / (NUM_THREADS / 10);
         if (max_ - obj_value > th) {
@@ -211,6 +222,8 @@ float multithread_infect(char *out2str, unsigned U, enum objective obj_type) {
             sum += exp(Ninfected_ptr[i]/ (0.0 + G->V)*10);
         } else if( obj_type == VAR){
             sum += A * Ninfected_ptr[i] + (1 - A)*abs(Ninfected_ptr[i] - U);
+        } else if(obj_type == P){
+            sum = Ninfected_ptr[i] > sum ? Ninfected_ptr[i] : sum ;
         }
     }
     float mean = sum / ((float) NUM_THREADS);
@@ -218,7 +231,11 @@ float multithread_infect(char *out2str, unsigned U, enum objective obj_type) {
 //    printf("\nsum: %f\nmean : %f \n ", sum, mean);
     //print_pdf(stdout, Ninfected_ptr, NUM_THREADS, G->V, 25);
     fclose(out2);
-    return mean;
+    if(obj_type == P){
+        return sum ;
+    } else {
+        return mean;
+    }
 }
 
 
@@ -233,7 +250,7 @@ void print_cdf(FILE *fp, int *Ninfected, int num_threads, int V, int w) {
         cumulative[i] = cumulative[i - 1] + density[i];
     }
 
-    for (i = 1; i < V + 1; i = i + i) {
+    for (i = 1; i < V + 1; i = i + 1) {
         fprintf(fp, "%d %d\n", i, cumulative[i]);
     }
     fputc('\n', fp);
