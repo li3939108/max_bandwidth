@@ -36,7 +36,7 @@ void infect_dfs(Graph *G, Vertex *v, char *infected, reent *seedp,
 
   for (j = 0; j < v->degree; ++j) {
     if (v->list[j][2] == 0
-        && v->list[j][1] > getRandTo_r(MAX_EDGE_WEIGHT * 10, seedp)) {
+        && v->list[j][1] > getRandTo_r(MAX_EDGE_WEIGHT * RANDOM_COEFF, seedp) ) {
       infect_dfs(G, G->adj_list[v->list[j][0]],
                  infected, seedp, Ninfected_ptr);
     }
