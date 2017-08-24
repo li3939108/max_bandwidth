@@ -122,7 +122,7 @@ int main(int argc, char *argv[]) {
     seed_vertices[0] = DEFAULT_INIT_SEED;
     seed_vertices[1] = DEFAULT_INIT_SEED + 1002;
     //multithread_infect(out2str);
-    stable_infect(INT_MAX, (unsigned int) U, objtype);
+    stable_infect(1, (unsigned int) U, objtype);
 
     fclose(out_graph);
 
