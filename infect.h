@@ -39,7 +39,7 @@ enum objective {
 
 void stable_infect(unsigned int K, unsigned int U, enum objective obj_type);
 
-float multithread_infect(char *out2str, unsigned U, enum objective obj_type);
+float multithread_infect(char *out2str, unsigned K, unsigned U, enum objective obj_type);
 
 int infect(Graph *G, int Nseed, int *seed, char *infected,
            reent *seedp);

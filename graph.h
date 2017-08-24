@@ -17,19 +17,20 @@ typedef struct drand48_data reent;
 #define LIST_SIZE  3
 
 typedef struct _Vertex {
-    int degree;
-    int label;
-    int rank;//for use with Make-Set-Find
-    int (*list)[LIST_SIZE];//[label, weight, direction]
-    struct _Vertex *parent;//for use with Make-Set-Find
+  int degree;
+  int label;
+  int prob;//for use with Make-Set-Find
+  float obj;
+  int (*list)[LIST_SIZE];//[label, weight, direction]
+  struct _Vertex *parent;//for use with Make-Set-Find
 } Vertex;
 
 typedef struct _Graph {
-    int V;
-    int E;
-    int (*edge_list)[2]; // [label,weight]
-    int (*edge_pair)[2]; //[v1, v2]
-    Vertex **adj_list;
+  int V;
+  int E;
+  int (*edge_list)[2]; // [label,weight]
+  int (*edge_pair)[2]; //[v1, v2]
+  Vertex **adj_list;
 } Graph;
 
 
