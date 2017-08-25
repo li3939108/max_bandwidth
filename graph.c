@@ -11,7 +11,7 @@ Vertex *new_vertex(int label) {
   v->label = label;
   v->list = NULL;
   v->prob = 0;
-  v->obj = 0 ;
+  v->obj = 0.0 ;
   return v;
 }
 

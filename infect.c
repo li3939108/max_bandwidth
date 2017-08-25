@@ -13,11 +13,11 @@
 #ifndef INFECT_GLOBAL_VAR
 #define INFECT_GLOBAL_VAR
 
-Graph *G;
+Graph *G = NULL;
 int *seed_vertices = NULL;
 int n_seed = DEFAULT_NUM_SEEDS;
-int Ninfected_ptr[NUM_THREADS];
-FILE *out2;
+int *Ninfected_ptr = NULL;
+FILE *out2=NULL;
 
 #endif
 
@@ -118,7 +118,7 @@ void stable_infect(unsigned int K, unsigned int U, enum objective obj_type) {
     fprintf(info, "\n-----------\n");
     for (j = V; j > V - K; --j) {
       sorted[j]->prob += delta;
-      fprintf(info, "%d:%f prob %d ", sorted[j]->label, sorted[j]->obj, sorted[j]->prob/ (float) MAX_EDGE_WEIGHT);
+      fprintf(info, "%d:%f prob %f ", sorted[j]->label, sorted[j]->obj, sorted[j]->prob/ (float) MAX_EDGE_WEIGHT);
     }
     fprintf(info, "\n");
 
@@ -167,18 +167,21 @@ void stable_infect(unsigned int K, unsigned int U, enum objective obj_type) {
 
 
 void *perform_work(void *argument) {
-
-  int passed_in_value, i, j;
-  int seeds[G->V + 5];
+  int passed_in_value, i=0x11, j=33;
+  int *seeds, nSeeds;
   passed_in_value = *((int *) argument);
-  memset(seeds, 0, (G->V + 5) * sizeof *seeds);
+  seeds = malloc( 1*sizeof *seeds);
+  nSeeds = 1;
+
   seeds[0] = seed_vertices[0];
 
   /*
    * Record whether a vertex is infected
    */
-  char infected[G->V + 5];
-  memset(infected, 0, (G->V + 5) * sizeof *infected);
+  char *infected ;
+  int s =  (G->V + 5) * sizeof *infected;
+  infected= malloc(s);
+  memset(infected, 0,s);
   unsigned long seed_int = (unsigned long) (
       (1 + passed_in_value + time(NULL)) % 888);
 #ifdef __CYGWIN__
@@ -190,12 +193,17 @@ void *perform_work(void *argument) {
   for (i = 1, j = 1; i <= G->V; ++i) {
     if (i != seeds[0] &&
         getRandTo_r(MAX_EDGE_WEIGHT, &seed) <= G->adj_list[i]->prob) {
+      if(j >= nSeeds){
+        seeds= realloc(seeds, (1+j)*2*sizeof *seeds);
+        nSeeds = 2+j*2;
+      }
       seeds[j] = i;
       j++;
     }
   }
+  n_seed = j ;
   Ninfected_ptr[passed_in_value] =
-      infect(G, n_seed, seeds, infected, &seed);
+      infect(G,n_seed , seeds, infected, &seed);
 
   fprintf(out2, "infected[%d] : %d\n", passed_in_value,
           Ninfected_ptr[passed_in_value]);
