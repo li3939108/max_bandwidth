@@ -17,4 +17,3 @@ add_executable(infect ${SOURCE_FILES})
 
 target_link_libraries(infect ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(infect m)
-

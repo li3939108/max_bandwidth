@@ -20,7 +20,7 @@
 extern Graph *G;
 extern int *seed_vertices;
 extern int n_seed;
-extern int Ninfected_ptr[NUM_THREADS];
+extern int *Ninfected_ptr;
 extern FILE *out2;
 
 #endif
