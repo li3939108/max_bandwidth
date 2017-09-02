@@ -13,7 +13,7 @@
 
 
 int main(int argc, char *argv[]) {
-  int D = 0, U = 1, K = 2;
+  int D = 0, U = 1, K = 1;
   FILE *out_graph;
   struct timeval tv;
   double st, et;
